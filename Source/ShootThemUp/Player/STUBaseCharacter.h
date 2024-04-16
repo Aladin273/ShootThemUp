@@ -16,7 +16,7 @@ class SHOOTTHEMUP_API ASTUBaseCharacter : public ACharacter
 
 public:
 	// Sets default values for this character's properties
-	ASTUBaseCharacter();
+	ASTUBaseCharacter(const FObjectInitializer& ObjInit);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	USpringArmComponent* SpringArmComponent;
@@ -40,6 +40,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual FVector GetRelativeVelocity() const;
+
+	UFUNCTION(BlueprintCallable)
+	void StartRunning();
+
+	UFUNCTION(BlueprintCallable)
+	void StopRunning();
 
 private:
 	void MoveForward(float Amount);

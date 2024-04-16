@@ -5,10 +5,13 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 
+#include "STUCharacterMovementComponent.h"
+
 // Sets default values
-ASTUBaseCharacter::ASTUBaseCharacter()
+ASTUBaseCharacter::ASTUBaseCharacter(const FObjectInitializer& ObjInit)
+	: Super(ObjInit.SetDefaultSubobjectClass<USTUCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>("SpringArmComponent");
@@ -44,6 +47,9 @@ void ASTUBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAxis("LookAround", this, &ASTUBaseCharacter::LookAround);
 
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ASTUBaseCharacter::Jump);
+
+	PlayerInputComponent->BindAction("Run", IE_Pressed, this, &ASTUBaseCharacter::StartRunning);
+	PlayerInputComponent->BindAction("Run", IE_Released, this, &ASTUBaseCharacter::StopRunning);
 }
 
 FVector ASTUBaseCharacter::GetInputVelocity() const
@@ -53,16 +59,28 @@ FVector ASTUBaseCharacter::GetInputVelocity() const
 
 FVector ASTUBaseCharacter::GetRelativeVelocity() const
 {
-	return GetActorRotation().UnrotateVector(GetVelocity()).GetSafeNormal();
+	return GetActorRotation().UnrotateVector(GetVelocity());
+}
+
+void ASTUBaseCharacter::StartRunning()
+{
+	Cast<USTUCharacterMovementComponent>(GetCharacterMovement())->StartRunning();
+}
+
+void ASTUBaseCharacter::StopRunning()
+{
+	Cast<USTUCharacterMovementComponent>(GetCharacterMovement())->StopRunning();
 }
 
 void ASTUBaseCharacter::MoveForward(float Amount)
 {
+	InputVelocity.X = Amount;
 	AddMovementInput(GetActorForwardVector(), Amount);
 }
 
 void ASTUBaseCharacter::MoveRight(float Amount)
 {
+	InputVelocity.Y = Amount;
 	AddMovementInput(GetActorRightVector(), Amount);
 }
 
@@ -75,4 +93,3 @@ void ASTUBaseCharacter::LookAround(float Amount)
 {
 	AddControllerYawInput(Amount);
 }
-
