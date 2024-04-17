@@ -4,16 +4,17 @@
 
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/TextRenderComponent.h"
 
 #include "STUCharacterMovementComponent.h"
 #include "STUHealthComponent.h"
 
-// Sets default values
+DEFINE_LOG_CATEGORY_STATIC(LogBaseCharacter, All, All)
+
 ASTUBaseCharacter::ASTUBaseCharacter(const FObjectInitializer& ObjInit)
 	: Super(ObjInit.SetDefaultSubobjectClass<USTUCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
-	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>("SpringArmComponent");
@@ -28,22 +29,21 @@ ASTUBaseCharacter::ASTUBaseCharacter(const FObjectInitializer& ObjInit)
 	HealthComponent = CreateDefaultSubobject<USTUHealthComponent>("HealthComponent");
 }
 
-// Called when the game starts or when spawned
 void ASTUBaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	OnHealthChanged(HealthComponent->GetHealth());
+
+	HealthComponent->OnDeath.AddDynamic(this, &ASTUBaseCharacter::OnDeath);
+	HealthComponent->OnHealthChanged.AddDynamic(this, &ASTUBaseCharacter::OnHealthChanged);
 }
 
-// Called every frame
 void ASTUBaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	HealthTextComponent->SetText(FText::FromString(FString::Printf(TEXT("%.0f"), HealthComponent->GetHealth())));
 }
 
-// Called to bind functionality to input
 void ASTUBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -100,4 +100,32 @@ void ASTUBaseCharacter::LookUp(float Amount)
 void ASTUBaseCharacter::LookAround(float Amount)
 {
 	AddControllerYawInput(Amount);
+}
+
+void ASTUBaseCharacter::OnDeath()
+{
+	HealthTextComponent->SetText(FText::FromString("Dead"));
+	HealthTextComponent->SetTextRenderColor(FColor::Red);
+
+	//GetMesh()->SetSimulatePhysics(true);
+	//GetMesh()->SetCollisionProfileName("BlockAll");
+
+	PlayAnimMontage(DeathAnimMontage);
+
+	GetCharacterMovement()->DisableMovement();
+	SetLifeSpan(3.0f);
+
+	UE_LOG(LogBaseCharacter, Error, TEXT("Is Dead"));
+}
+
+void ASTUBaseCharacter::OnHealthChanged(float Health)
+{
+	HealthTextComponent->SetText(FText::FromString(FString::Printf(TEXT("%.0f"), Health)));
+	
+	if (Health >= HealthComponent->MaxHealth / 2)
+		HealthTextComponent->SetTextRenderColor(FColor::Green);
+	else
+		HealthTextComponent->SetTextRenderColor(FColor::Orange);
+	
+	UE_LOG(LogBaseCharacter, Display, TEXT("Health Changed : %.2f"), Health);
 }

@@ -32,6 +32,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	USTUHealthComponent* HealthComponent;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* DeathAnimMontage;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -54,6 +57,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void StopRunning();
+
+	UFUNCTION(BlueprintCallable)
+	void OnDeath();
+
+	UFUNCTION(BlueprintCallable)
+	void OnHealthChanged(float Health);
 
 private:
 	void MoveForward(float Amount);

@@ -24,6 +24,9 @@ public:
 	float Radius = 300.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 Segments = 32;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FColor Color = FColor::Red;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -31,6 +34,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bDoFullDamage = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UDamageType> DamageType;
 
 protected:
 	// Called when the game starts or when spawned

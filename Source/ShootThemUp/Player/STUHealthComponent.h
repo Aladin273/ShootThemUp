@@ -6,6 +6,11 @@
 #include "Components/ActorComponent.h"
 #include "STUHealthComponent.generated.h"
 
+//DECLARE_MULTICAST_DELEGATE(FOnDeath) // C++
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeath); // C++ & BP
+
+//DECLARE_MULTICAST_DELEGATE_OneParam(FOnHealthChanged); // C++
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthChanged, float, Health); // C++ & BP
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class SHOOTTHEMUP_API USTUHealthComponent : public UActorComponent
@@ -19,8 +24,17 @@ public:
 	UFUNCTION(BlueprintCallable)
 	float GetHealth() const;
 
+	UFUNCTION(BlueprintCallable)
+	bool IsDead() const;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0", UIMin = "0"))
 	float MaxHealth = 100.f;
+
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
+	FOnDeath OnDeath;
+
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
+	FOnHealthChanged OnHealthChanged;
 
 protected:
 	// Called when the game starts
