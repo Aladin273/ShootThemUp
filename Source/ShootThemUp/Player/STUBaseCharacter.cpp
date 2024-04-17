@@ -4,8 +4,10 @@
 
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Components/TextRenderComponent.h"
 
 #include "STUCharacterMovementComponent.h"
+#include "STUHealthComponent.h"
 
 // Sets default values
 ASTUBaseCharacter::ASTUBaseCharacter(const FObjectInitializer& ObjInit)
@@ -19,6 +21,11 @@ ASTUBaseCharacter::ASTUBaseCharacter(const FObjectInitializer& ObjInit)
 
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>("CameraComponent");
 	CameraComponent->SetupAttachment(SpringArmComponent);
+
+	HealthTextComponent = CreateDefaultSubobject<UTextRenderComponent>("HealthTextComponent");
+	HealthTextComponent->SetupAttachment(GetRootComponent());
+
+	HealthComponent = CreateDefaultSubobject<USTUHealthComponent>("HealthComponent");
 }
 
 // Called when the game starts or when spawned
@@ -33,6 +40,7 @@ void ASTUBaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	HealthTextComponent->SetText(FText::FromString(FString::Printf(TEXT("%.0f"), HealthComponent->GetHealth())));
 }
 
 // Called to bind functionality to input

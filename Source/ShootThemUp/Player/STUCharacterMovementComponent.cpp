@@ -13,7 +13,7 @@ float USTUCharacterMovementComponent::GetMaxSpeed() const
 bool USTUCharacterMovementComponent::IsRunning() const
 {
     ASTUBaseCharacter* Character = Cast<ASTUBaseCharacter>(GetPawnOwner());
-    return WantsToRun && Character->GetRelativeVelocity().X > 0;
+    return WantsToRun && Character->GetInputVelocity().X > 0 && !Character->GetVelocity().IsZero();
 }
 
 void USTUCharacterMovementComponent::StartRunning()

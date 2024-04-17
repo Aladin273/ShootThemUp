@@ -8,6 +8,8 @@
 
 class USpringArmComponent;
 class UCameraComponent;
+class UTextRenderComponent;
+class USTUHealthComponent;
 
 UCLASS()
 class SHOOTTHEMUP_API ASTUBaseCharacter : public ACharacter
@@ -23,6 +25,12 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	UCameraComponent* CameraComponent;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+	UTextRenderComponent* HealthTextComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+	USTUHealthComponent* HealthComponent;
 
 protected:
 	// Called when the game starts or when spawned
