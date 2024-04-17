@@ -80,6 +80,52 @@ void ASTUBaseCharacter::StopRunning()
 	Cast<USTUCharacterMovementComponent>(GetCharacterMovement())->StopRunning();
 }
 
+void ASTUBaseCharacter::Landed(const FHitResult& Hit)
+{
+	float FallVelocityZ = -GetVelocity().Z;
+
+	if (FallVelocityZ > FallDamageVelocity.X)
+	{
+		float Damage = FMath::GetMappedRangeValueClamped(FallDamageVelocity, FallDamage, FallVelocityZ);
+		TakeDamage(Damage, {}, nullptr, nullptr);
+
+		PlayAnimMontage(LandedAnimMontage);
+		GetCharacterMovement()->SetMovementMode(MOVE_None);
+
+		FTimerHandle LandedTimerHandle;
+		GetWorld()->GetTimerManager().SetTimer(LandedTimerHandle, [&LandedTimerHandle, this] { GetCharacterMovement()->SetMovementMode(MOVE_Walking); }, FallDamageDelay, false);
+	}
+
+	UE_LOG(LogBaseCharacter, Display, TEXT("Landed with Velocity: %.f"), FallVelocityZ);
+}
+
+void ASTUBaseCharacter::OnDeath()
+{
+	HealthTextComponent->SetText(FText::FromString("Dead"));
+	HealthTextComponent->SetTextRenderColor(FColor::Red);
+
+	PlayAnimMontage(DeathAnimMontage);
+
+	GetCharacterMovement()->DisableMovement();
+	SetLifeSpan(3.0f);
+
+	Controller->ChangeState(NAME_Spectating);
+
+	UE_LOG(LogBaseCharacter, Error, TEXT("Is Dead"));
+}
+
+void ASTUBaseCharacter::OnHealthChanged(float Health)
+{
+	HealthTextComponent->SetText(FText::FromString(FString::Printf(TEXT("%.0f"), Health)));
+
+	if (Health >= HealthComponent->MaxHealth / 2)
+		HealthTextComponent->SetTextRenderColor(FColor::Green);
+	else
+		HealthTextComponent->SetTextRenderColor(FColor::Orange);
+
+	UE_LOG(LogBaseCharacter, Display, TEXT("Health Changed : %.2f"), Health);
+}
+
 void ASTUBaseCharacter::MoveForward(float Amount)
 {
 	InputVelocity.X = Amount;
@@ -100,32 +146,4 @@ void ASTUBaseCharacter::LookUp(float Amount)
 void ASTUBaseCharacter::LookAround(float Amount)
 {
 	AddControllerYawInput(Amount);
-}
-
-void ASTUBaseCharacter::OnDeath()
-{
-	HealthTextComponent->SetText(FText::FromString("Dead"));
-	HealthTextComponent->SetTextRenderColor(FColor::Red);
-
-	//GetMesh()->SetSimulatePhysics(true);
-	//GetMesh()->SetCollisionProfileName("BlockAll");
-
-	PlayAnimMontage(DeathAnimMontage);
-
-	GetCharacterMovement()->DisableMovement();
-	SetLifeSpan(3.0f);
-
-	UE_LOG(LogBaseCharacter, Error, TEXT("Is Dead"));
-}
-
-void ASTUBaseCharacter::OnHealthChanged(float Health)
-{
-	HealthTextComponent->SetText(FText::FromString(FString::Printf(TEXT("%.0f"), Health)));
-	
-	if (Health >= HealthComponent->MaxHealth / 2)
-		HealthTextComponent->SetTextRenderColor(FColor::Green);
-	else
-		HealthTextComponent->SetTextRenderColor(FColor::Orange);
-	
-	UE_LOG(LogBaseCharacter, Display, TEXT("Health Changed : %.2f"), Health);
 }

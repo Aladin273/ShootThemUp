@@ -27,9 +27,23 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool IsDead() const;
 
+public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0", UIMin = "0"))
 	float MaxHealth = 100.f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool AutoHeal = true;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = "AutoHeal"))
+	float HealDelayTime = 3.f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = "AutoHeal"))
+	float HealUpdateTime = 0.1f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = "AutoHeal"))
+	float HealModifier = 1.f;
 
+public:
 	UPROPERTY(BlueprintAssignable, BlueprintCallable)
 	FOnDeath OnDeath;
 
@@ -47,5 +61,8 @@ protected:
 	virtual void OnTakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 
 private:
+	void HealUpdate();
+	
 	float Health = 0.f;
+	FTimerHandle HealTimerHandle;
 };

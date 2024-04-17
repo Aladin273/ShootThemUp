@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "STUHealthComponent.h"
+#include "TimerManager.h"
 
 #include "../Dev/STUFireDamageType.h"
 #include "../Dev/STUIceDamageType.h"
@@ -46,7 +47,14 @@ void USTUHealthComponent::OnTakeAnyDamage(AActor* DamagedActor, float Damage, co
 	OnHealthChanged.Broadcast(Health);
 
 	if (IsDead())
+	{
 		OnDeath.Broadcast();
+	}
+	else if (AutoHeal)
+	{
+		GetWorld()->GetTimerManager().ClearTimer(HealTimerHandle);
+		GetWorld()->GetTimerManager().SetTimer(HealTimerHandle, this, &USTUHealthComponent::HealUpdate, HealUpdateTime, true, HealDelayTime);
+	}
 
     //if (DamageType)
     //{
@@ -59,5 +67,18 @@ void USTUHealthComponent::OnTakeAnyDamage(AActor* DamagedActor, float Damage, co
     //		UE_LOG(LogHealthComponent, Display, TEXT("So coooooold!"));
     //	}
     //}
+}
+
+void USTUHealthComponent::HealUpdate()
+{
+	if (!AutoHeal || Health == MaxHealth)
+	{
+		GetWorld()->GetTimerManager().ClearTimer(HealTimerHandle);
+	}
+	else
+	{
+		Health = FMath::Clamp(Health + HealModifier, 0.f, MaxHealth);
+		OnHealthChanged.Broadcast(Health);
+	}
 }
 
