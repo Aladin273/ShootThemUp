@@ -71,7 +71,7 @@ void USTUHealthComponent::OnTakeAnyDamage(AActor* DamagedActor, float Damage, co
 
 void USTUHealthComponent::HealUpdate()
 {
-	if (!AutoHeal || Health == MaxHealth)
+	if (!AutoHeal || Health == MaxHealth || IsDead())
 	{
 		GetWorld()->GetTimerManager().ClearTimer(HealTimerHandle);
 	}

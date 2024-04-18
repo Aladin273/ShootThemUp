@@ -10,7 +10,7 @@
 #include "STUCharacterMovementComponent.h"
 #include "STUHealthComponent.h"
 
-#include "../Weapon/STUBaseWeapon.h"
+#include "../Weapon/STUWeaponComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogBaseCharacter, All, All)
 
@@ -29,13 +29,12 @@ ASTUBaseCharacter::ASTUBaseCharacter(const FObjectInitializer& ObjInit)
 	HealthTextComponent->SetupAttachment(GetRootComponent());
 
 	HealthComponent = CreateDefaultSubobject<USTUHealthComponent>("HealthComponent");
+	WeaponComponent = CreateDefaultSubobject<USTUWeaponComponent>("WeaponComponent");
 }
 
 void ASTUBaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	SpawnWeapon();
 
 	OnHealthChanged(HealthComponent->GetHealth(), HealthComponent->MaxHealth);
 
@@ -64,6 +63,8 @@ void ASTUBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 	PlayerInputComponent->BindAction("Run", IE_Pressed, Cast<USTUCharacterMovementComponent>(GetCharacterMovement()), &USTUCharacterMovementComponent::StartRunning);
 	PlayerInputComponent->BindAction("Run", IE_Released, Cast<USTUCharacterMovementComponent>(GetCharacterMovement()), &USTUCharacterMovementComponent::StopRunning);
+
+	PlayerInputComponent->BindAction("Fire", IE_Released, WeaponComponent, &USTUWeaponComponent::Fire);
 }
 
 FVector ASTUBaseCharacter::GetInputVelocity() const
@@ -83,7 +84,7 @@ void ASTUBaseCharacter::OnDeath()
 
 	PlayAnimMontage(DeathAnimMontage);
 
-	GetCharacterMovement()->DisableMovement();
+	GetCharacterMovement()->SetMovementMode(MOVE_None);
 	SetLifeSpan(DeathLifeSpan);
 
 	Controller->ChangeState(NAME_Spectating);
@@ -111,10 +112,8 @@ void ASTUBaseCharacter::OnLand(const FHitResult& Hit)
 
 	if (FallVelocityZ > FallDamageVelocity.X)
 	{
-		float Damage = FMath::GetMappedRangeValueClamped(FallDamageVelocity, FallDamage, FallVelocityZ);
-		TakeDamage(Damage, {}, nullptr, nullptr);
-
 		PlayAnimMontage(FallAnimMontage);
+
 		GetCharacterMovement()->SetMovementMode(MOVE_None);
 
 		FTimerHandle LandedTimerHandle;
@@ -123,6 +122,9 @@ void ASTUBaseCharacter::OnLand(const FHitResult& Hit)
 				GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 				GetWorld()->GetTimerManager().ClearTimer(LandedTimerHandle);
 			}, FallDelay, false);
+
+		float Damage = FMath::GetMappedRangeValueClamped(FallDamageVelocity, FallDamage, FallVelocityZ);
+		TakeDamage(Damage, {}, nullptr, nullptr);
 	}
 
 	UE_LOG(LogBaseCharacter, Display, TEXT("Landed with Velocity: %.f"), FallVelocityZ);
@@ -148,15 +150,4 @@ void ASTUBaseCharacter::LookUp(float Amount)
 void ASTUBaseCharacter::LookAround(float Amount)
 {
 	AddControllerYawInput(Amount);
-}
-
-void ASTUBaseCharacter::SpawnWeapon()
-{
-	ASTUBaseWeapon* Weapon = GetWorld()->SpawnActor<ASTUBaseWeapon>(WeaponClass);
-
-	if (Weapon)
-	{
-		FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, false);
-		Weapon->AttachToComponent(GetMesh(), AttachmentRules, "WeaponSocket");
-	}
 }

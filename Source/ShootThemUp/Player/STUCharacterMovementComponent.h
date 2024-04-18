@@ -17,9 +17,6 @@ class SHOOTTHEMUP_API USTUCharacterMovementComponent : public UCharacterMovement
 public:
 	virtual float GetMaxSpeed() const override;
 
-	UPROPERTY(Category="Character Movement: Walking", EditAnywhere, BlueprintReadWrite, meta=(ClampMin="0", UIMin="0", ForceUnits="cm/s", DisplayAfter="MaxWalkSpeedCrouched"))
-	float MaxWalkSpeedRunning = 1200.f;
-
 	UFUNCTION(BlueprintCallable)
 	virtual bool IsRunning() const;
 
@@ -28,6 +25,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	virtual void StopRunning();
+
+	UPROPERTY(Category="Character Movement: Walking", EditAnywhere, BlueprintReadWrite, meta=(ClampMin="0", UIMin="0", ForceUnits="cm/s", DisplayAfter="MaxWalkSpeedCrouched"))
+	float MaxWalkSpeedRunning = 1200.f;
 
 private:
 	bool WantsToRun = false;
