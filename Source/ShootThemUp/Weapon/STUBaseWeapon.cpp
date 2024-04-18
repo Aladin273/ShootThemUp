@@ -46,6 +46,8 @@ void ASTUBaseWeapon::MakeShot()
 		
 		if (HitResult.bBlockingHit)
 		{
+			MakeDamage(HitResult);
+
 			DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), HitResult.ImpactPoint, FColor::Red, false, 3.0f, 0.f, 3.f);
 			DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10.f, 24, FColor::Red, false, 3.0f);
 		}
@@ -101,5 +103,13 @@ void ASTUBaseWeapon::MakeHit(FHitResult& HitResult, const FVector& TraceStart, c
 	CollisionParams.AddIgnoredActor(GetOwner());
 
 	GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECollisionChannel::ECC_Visibility, CollisionParams);
+}
+
+void ASTUBaseWeapon::MakeDamage(const FHitResult& HitResult)
+{
+	AActor* DamagedActor = HitResult.GetActor();
+
+	if (DamagedActor)
+		DamagedActor->TakeDamage(DamageAmount, {}, GetPlayerController(), this);
 }
 

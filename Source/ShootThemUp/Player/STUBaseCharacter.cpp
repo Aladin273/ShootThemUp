@@ -83,6 +83,9 @@ void ASTUBaseCharacter::OnDeath()
 	HealthTextComponent->SetTextRenderColor(FColor::Red);
 
 	PlayAnimMontage(DeathAnimMontage);
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->SetCollisionProfileName("BlockAll");
+	GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 
 	GetCharacterMovement()->SetMovementMode(MOVE_None);
 	SetLifeSpan(DeathLifeSpan);

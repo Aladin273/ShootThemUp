@@ -25,6 +25,9 @@ public:
 	FName MuzzleSocket = "MuzzleSocket";
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon") 
+	float DamageAmount = 34.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon") 
 	float TraceMaxDistance = 20000.f;
 
 protected:
@@ -48,5 +51,7 @@ protected:
 	bool GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRotation) const;
 	
 	bool GetTraceData(FVector& TraceStart, FVector& TraceEnd);	
+
 	void MakeHit(FHitResult& HitResult, const FVector& TraceStart, const FVector& TraceEnd);
+	void MakeDamage(const FHitResult& HitResult);
 };
