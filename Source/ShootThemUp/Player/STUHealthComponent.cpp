@@ -28,7 +28,7 @@ void USTUHealthComponent::BeginPlay()
 	Super::BeginPlay();
 
 	Health = MaxHealth;
-	OnHealthChanged.Broadcast(Health);
+	OnHealthChanged.Broadcast(Health, MaxHealth);
 
 	GetOwner()->OnTakeAnyDamage.AddDynamic(this, &USTUHealthComponent::OnTakeAnyDamage);
 }
@@ -44,7 +44,7 @@ void USTUHealthComponent::OnTakeAnyDamage(AActor* DamagedActor, float Damage, co
 		return;
 
 	Health = FMath::Clamp(Health - Damage, 0.f, MaxHealth);
-	OnHealthChanged.Broadcast(Health);
+	OnHealthChanged.Broadcast(Health, MaxHealth);
 
 	if (IsDead())
 	{
@@ -78,7 +78,7 @@ void USTUHealthComponent::HealUpdate()
 	else
 	{
 		Health = FMath::Clamp(Health + HealModifier, 0.f, MaxHealth);
-		OnHealthChanged.Broadcast(Health);
+		OnHealthChanged.Broadcast(Health, MaxHealth);
 	}
 }
 

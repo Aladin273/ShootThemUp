@@ -33,10 +33,12 @@ void ASTUBaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	OnHealthChanged(HealthComponent->GetHealth());
+	OnHealthChanged(HealthComponent->GetHealth(), HealthComponent->MaxHealth);
 
 	HealthComponent->OnDeath.AddDynamic(this, &ASTUBaseCharacter::OnDeath);
 	HealthComponent->OnHealthChanged.AddDynamic(this, &ASTUBaseCharacter::OnHealthChanged);
+	
+	LandedDelegate.AddDynamic(this, &ASTUBaseCharacter::OnLand);
 }
 
 void ASTUBaseCharacter::Tick(float DeltaTime)
@@ -56,8 +58,8 @@ void ASTUBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ASTUBaseCharacter::Jump);
 
-	PlayerInputComponent->BindAction("Run", IE_Pressed, this, &ASTUBaseCharacter::StartRunning);
-	PlayerInputComponent->BindAction("Run", IE_Released, this, &ASTUBaseCharacter::StopRunning);
+	PlayerInputComponent->BindAction("Run", IE_Pressed, Cast<USTUCharacterMovementComponent>(GetCharacterMovement()), &USTUCharacterMovementComponent::StartRunning);
+	PlayerInputComponent->BindAction("Run", IE_Released, Cast<USTUCharacterMovementComponent>(GetCharacterMovement()), &USTUCharacterMovementComponent::StopRunning);
 }
 
 FVector ASTUBaseCharacter::GetInputVelocity() const
@@ -70,35 +72,6 @@ FVector ASTUBaseCharacter::GetRelativeVelocity() const
 	return GetActorRotation().UnrotateVector(GetVelocity());
 }
 
-void ASTUBaseCharacter::StartRunning()
-{
-	Cast<USTUCharacterMovementComponent>(GetCharacterMovement())->StartRunning();
-}
-
-void ASTUBaseCharacter::StopRunning()
-{
-	Cast<USTUCharacterMovementComponent>(GetCharacterMovement())->StopRunning();
-}
-
-void ASTUBaseCharacter::Landed(const FHitResult& Hit)
-{
-	float FallVelocityZ = -GetVelocity().Z;
-
-	if (FallVelocityZ > FallDamageVelocity.X)
-	{
-		float Damage = FMath::GetMappedRangeValueClamped(FallDamageVelocity, FallDamage, FallVelocityZ);
-		TakeDamage(Damage, {}, nullptr, nullptr);
-
-		PlayAnimMontage(LandedAnimMontage);
-		GetCharacterMovement()->SetMovementMode(MOVE_None);
-
-		FTimerHandle LandedTimerHandle;
-		GetWorld()->GetTimerManager().SetTimer(LandedTimerHandle, [&LandedTimerHandle, this] { GetCharacterMovement()->SetMovementMode(MOVE_Walking); }, FallDamageDelay, false);
-	}
-
-	UE_LOG(LogBaseCharacter, Display, TEXT("Landed with Velocity: %.f"), FallVelocityZ);
-}
-
 void ASTUBaseCharacter::OnDeath()
 {
 	HealthTextComponent->SetText(FText::FromString("Dead"));
@@ -107,23 +80,48 @@ void ASTUBaseCharacter::OnDeath()
 	PlayAnimMontage(DeathAnimMontage);
 
 	GetCharacterMovement()->DisableMovement();
-	SetLifeSpan(3.0f);
+	SetLifeSpan(DeathLifeSpan);
 
 	Controller->ChangeState(NAME_Spectating);
 
 	UE_LOG(LogBaseCharacter, Error, TEXT("Is Dead"));
 }
 
-void ASTUBaseCharacter::OnHealthChanged(float Health)
+void ASTUBaseCharacter::OnHealthChanged(float Health, float MaxHealth)
 {
 	HealthTextComponent->SetText(FText::FromString(FString::Printf(TEXT("%.0f"), Health)));
 
-	if (Health >= HealthComponent->MaxHealth / 2)
+	if (Health >= MaxHealth / 2)
 		HealthTextComponent->SetTextRenderColor(FColor::Green);
+	else if (Health >= MaxHealth / 4)
+		HealthTextComponent->SetTextRenderColor(FColor::Yellow);
 	else
 		HealthTextComponent->SetTextRenderColor(FColor::Orange);
 
 	UE_LOG(LogBaseCharacter, Display, TEXT("Health Changed : %.2f"), Health);
+}
+
+void ASTUBaseCharacter::OnLand(const FHitResult& Hit)
+{
+	float FallVelocityZ = -GetVelocity().Z;
+
+	if (FallVelocityZ > FallDamageVelocity.X)
+	{
+		float Damage = FMath::GetMappedRangeValueClamped(FallDamageVelocity, FallDamage, FallVelocityZ);
+		TakeDamage(Damage, {}, nullptr, nullptr);
+
+		PlayAnimMontage(FallAnimMontage);
+		GetCharacterMovement()->SetMovementMode(MOVE_None);
+
+		FTimerHandle LandedTimerHandle;
+		GetWorld()->GetTimerManager().SetTimer(LandedTimerHandle, [&LandedTimerHandle, this]
+			{
+				GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+				GetWorld()->GetTimerManager().ClearTimer(LandedTimerHandle);
+			}, FallDelay, false);
+	}
+
+	UE_LOG(LogBaseCharacter, Display, TEXT("Landed with Velocity: %.f"), FallVelocityZ);
 }
 
 void ASTUBaseCharacter::MoveForward(float Amount)

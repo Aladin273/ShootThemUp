@@ -36,16 +36,19 @@ public:
 	UAnimMontage* DeathAnimMontage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-	UAnimMontage* LandedAnimMontage;
+	UAnimMontage* FallAnimMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	float DeathLifeSpan = 3.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	float FallDelay = 0.4f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	FVector2D FallDamage = FVector2D(10.f, 100.f);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	FVector2D FallDamageVelocity = FVector2D(800.f, 1600.f);
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
-	float FallDamageDelay = 0.4f;
 
 protected:
 	// Called when the game starts or when spawned
@@ -66,19 +69,13 @@ public:
 
 protected:
 	UFUNCTION(BlueprintCallable)
-	virtual void StartRunning();
-
-	UFUNCTION(BlueprintCallable)
-	virtual void StopRunning();
-
-	UFUNCTION(BlueprintCallable)
-	virtual void Landed(const FHitResult& Hit);
-
-	UFUNCTION(BlueprintCallable)
 	virtual void OnDeath();
 
 	UFUNCTION(BlueprintCallable)
-	virtual void OnHealthChanged(float Health);
+	virtual void OnHealthChanged(float Health, float MaxHealth);
+
+	UFUNCTION(BlueprintCallable)
+	virtual void OnLand(const FHitResult& Hit);
 
 private:
 	void MoveForward(float Amount);
