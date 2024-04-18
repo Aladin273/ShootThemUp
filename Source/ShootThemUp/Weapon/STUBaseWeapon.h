@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "STUBaseWeapon.generated.h"
 
+class APlayerController;
 class USkeletalMeshComponent;
 
 UCLASS()
@@ -37,6 +38,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual void Fire();
 
-private:
+	UFUNCTION(BlueprintCallable)
+	FVector GetMuzzleWorldLocation() const;
+
+protected:
 	void MakeShot();
+
+	APlayerController* GetPlayerController() const;
+	bool GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRotation) const;
+	
+	bool GetTraceData(FVector& TraceStart, FVector& TraceEnd);	
+	void MakeHit(FHitResult& HitResult, const FVector& TraceStart, const FVector& TraceEnd);
 };

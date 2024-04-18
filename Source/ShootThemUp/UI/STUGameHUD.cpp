@@ -9,7 +9,7 @@ void ASTUGameHUD::DrawHUD()
 {
     FVector2D Center = FVector2D(Canvas->SizeX * 0.5f, Canvas->SizeY * 0.5f);
 
-    float LineSize = 10.f;
+    float LineSize = 1.f;
     float LineThickness = 4.0f;
     FLinearColor LineColor = FLinearColor::White;
 

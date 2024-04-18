@@ -17,6 +17,12 @@ void USTUWeaponComponent::BeginPlay()
 	SpawnWeapon();
 }
 
+void USTUWeaponComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if (CurrentWeapon)
+		CurrentWeapon->Destroy();
+}
+
 void USTUWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);

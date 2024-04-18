@@ -4,7 +4,7 @@
 
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/Character.h"
-#include "GameFramework/Controller.h"
+#include "GameFramework/PlayerController.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogBaseWeapon, All, All)
 
@@ -27,49 +27,79 @@ void ASTUBaseWeapon::Tick(float DeltaTime)
 
 void ASTUBaseWeapon::Fire()
 {
-	UE_LOG(LogBaseWeapon, Display, TEXT("Fire!"));
-
 	MakeShot();
+}
+
+FVector ASTUBaseWeapon::GetMuzzleWorldLocation() const
+{
+	return WeaponMesh->GetSocketLocation(MuzzleSocket);
 }
 
 void ASTUBaseWeapon::MakeShot()
 {
+	FVector TraceStart, TraceEnd;
+
+	if (GetTraceData(TraceStart, TraceEnd))
+	{
+		FHitResult HitResult;
+		MakeHit(HitResult, TraceStart, TraceEnd);
+		
+		if (HitResult.bBlockingHit)
+		{
+			DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), HitResult.ImpactPoint, FColor::Red, false, 3.0f, 0.f, 3.f);
+			DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10.f, 24, FColor::Red, false, 3.0f);
+		}
+		else
+		{
+			DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), TraceEnd, FColor::Red, false, 3.0f, 0.f, 3.f);
+		}
+	}
+}
+
+APlayerController* ASTUBaseWeapon::GetPlayerController() const
+{
 	ACharacter* Player = Cast<ACharacter>(GetOwner());
-	if (!Player) return;
+	
+	if (Player)
+		return Cast<APlayerController>(Player->GetController());
 
-	AController* Controller = Player->GetController();
-	if (!Controller) return;
+	return nullptr;
+}
 
+bool ASTUBaseWeapon::GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRotation) const
+{
+	APlayerController* Controller = GetPlayerController();
+
+	if (Controller)
+	{
+		Controller->GetPlayerViewPoint(ViewLocation, ViewRotation);
+		return true;
+	}
+
+	return false;
+}
+
+bool ASTUBaseWeapon::GetTraceData(FVector& TraceStart, FVector& TraceEnd)
+{
 	FVector ViewLocation;
 	FRotator ViewRotation;
-	Controller->GetPlayerViewPoint(ViewLocation, ViewRotation);
-
-	const FTransform SocketTransform = WeaponMesh->GetSocketTransform(MuzzleSocket);
-
-	//const FVector TraceStart = SocketTransform.GetLocation();
-	//const FVector TraceDirection = SocketTransform.GetRotation().GetForwardVector();
 	
-	const FVector TraceStart = ViewLocation;
-	const FVector TraceDirection = ViewRotation.Vector();
+	if (GetPlayerViewPoint(ViewLocation, ViewRotation))
+	{
+		TraceStart = ViewLocation;
+		TraceEnd = TraceStart + ViewRotation.Vector() * TraceMaxDistance;
+		
+		return true;
+	}
 
-	const FVector TraceEnd = TraceStart + TraceDirection * TraceMaxDistance;
+	return false;
+}
 
+void ASTUBaseWeapon::MakeHit(FHitResult& HitResult, const FVector& TraceStart, const FVector& TraceEnd)
+{
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(GetOwner());
 
-	FHitResult HitResult;
 	GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECollisionChannel::ECC_Visibility, CollisionParams);
-
-	if (HitResult.bBlockingHit)
-	{
-		DrawDebugLine(GetWorld(), SocketTransform.GetLocation(), HitResult.ImpactPoint, FColor::Red, false, 3.0f, 0.f, 3.f);
-		DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10.f, 24, FColor::Red, false, 5.0f);
-
-		UE_LOG(LogBaseWeapon, Display, TEXT("Bone: %s"), *HitResult.BoneName.ToString());
-	}
-	else
-	{
-		DrawDebugLine(GetWorld(), SocketTransform.GetLocation(), TraceEnd, FColor::Red, false, 3.0f, 0.f, 3.f);
-	}
 }
 
