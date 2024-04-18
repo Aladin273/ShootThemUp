@@ -9,7 +9,9 @@
 class USpringArmComponent;
 class UCameraComponent;
 class UTextRenderComponent;
+
 class USTUHealthComponent;
+class ASTUBaseWeapon;
 
 UCLASS()
 class SHOOTTHEMUP_API ASTUBaseCharacter : public ACharacter
@@ -38,17 +40,20 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	UAnimMontage* FallAnimMontage;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
 	float DeathLifeSpan = 3.f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
 	float FallDelay = 0.4f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
 	FVector2D FallDamage = FVector2D(10.f, 100.f);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
 	FVector2D FallDamageVelocity = FVector2D(800.f, 1600.f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+	TSubclassOf<ASTUBaseWeapon> WeaponClass;
 
 protected:
 	// Called when the game starts or when spawned
@@ -83,6 +88,8 @@ private:
 
 	void LookUp(float Amount);
 	void LookAround(float Amount);
+
+	void SpawnWeapon();
 
 	FVector InputVelocity = FVector::ZeroVector;
 };

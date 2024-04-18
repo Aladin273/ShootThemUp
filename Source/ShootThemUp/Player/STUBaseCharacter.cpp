@@ -10,6 +10,8 @@
 #include "STUCharacterMovementComponent.h"
 #include "STUHealthComponent.h"
 
+#include "../Weapon/STUBaseWeapon.h"
+
 DEFINE_LOG_CATEGORY_STATIC(LogBaseCharacter, All, All)
 
 ASTUBaseCharacter::ASTUBaseCharacter(const FObjectInitializer& ObjInit)
@@ -33,6 +35,8 @@ void ASTUBaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	SpawnWeapon();
+
 	OnHealthChanged(HealthComponent->GetHealth(), HealthComponent->MaxHealth);
 
 	HealthComponent->OnDeath.AddDynamic(this, &ASTUBaseCharacter::OnDeath);
@@ -144,4 +148,15 @@ void ASTUBaseCharacter::LookUp(float Amount)
 void ASTUBaseCharacter::LookAround(float Amount)
 {
 	AddControllerYawInput(Amount);
+}
+
+void ASTUBaseCharacter::SpawnWeapon()
+{
+	ASTUBaseWeapon* Weapon = GetWorld()->SpawnActor<ASTUBaseWeapon>(WeaponClass);
+
+	if (Weapon)
+	{
+		FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, false);
+		Weapon->AttachToComponent(GetMesh(), AttachmentRules, "WeaponSocket");
+	}
 }
