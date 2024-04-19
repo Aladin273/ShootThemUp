@@ -27,6 +27,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon") 
 	float DamageAmount = 34.f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+	float ShotRate = 0.1f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon") 
+	float ShotSpread = 0.25f;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon") 
 	float TraceMaxDistance = 20000.f;
 
@@ -39,13 +45,14 @@ protected:
 
 public:
 	UFUNCTION(BlueprintCallable)
-	virtual void Fire();
+	virtual void StartFire();
 
 	UFUNCTION(BlueprintCallable)
-	FVector GetMuzzleWorldLocation() const;
+	virtual void StopFire();
 
 protected:
 	void MakeShot();
+	FVector GetMuzzleWorldLocation() const;
 
 	APlayerController* GetPlayerController() const;
 	bool GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRotation) const;
@@ -54,4 +61,7 @@ protected:
 
 	void MakeHit(FHitResult& HitResult, const FVector& TraceStart, const FVector& TraceEnd);
 	void MakeDamage(const FHitResult& HitResult);
+
+private:
+	FTimerHandle ShotTimerHandle;
 };

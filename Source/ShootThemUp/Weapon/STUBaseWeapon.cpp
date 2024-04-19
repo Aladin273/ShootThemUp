@@ -25,14 +25,15 @@ void ASTUBaseWeapon::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void ASTUBaseWeapon::Fire()
+void ASTUBaseWeapon::StartFire()
 {
 	MakeShot();
+	GetWorld()->GetTimerManager().SetTimer(ShotTimerHandle, this, &ASTUBaseWeapon::MakeShot, ShotRate, true);
 }
 
-FVector ASTUBaseWeapon::GetMuzzleWorldLocation() const
+void ASTUBaseWeapon::StopFire()
 {
-	return WeaponMesh->GetSocketLocation(MuzzleSocket);
+	GetWorld()->GetTimerManager().ClearTimer(ShotTimerHandle);
 }
 
 void ASTUBaseWeapon::MakeShot()
@@ -56,6 +57,14 @@ void ASTUBaseWeapon::MakeShot()
 			DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), TraceEnd, FColor::Red, false, 3.0f, 0.f, 3.f);
 		}
 	}
+
+	// ShotSpread
+	//GetPlayerController()->AddPitchInput(-ShotSpread);
+}
+
+FVector ASTUBaseWeapon::GetMuzzleWorldLocation() const
+{
+	return WeaponMesh->GetSocketLocation(MuzzleSocket);
 }
 
 APlayerController* ASTUBaseWeapon::GetPlayerController() const
@@ -90,6 +99,9 @@ bool ASTUBaseWeapon::GetTraceData(FVector& TraceStart, FVector& TraceEnd)
 	{
 		TraceStart = ViewLocation;
 		TraceEnd = TraceStart + ViewRotation.Vector() * TraceMaxDistance;
+		
+		// ShotSpread
+		//TraceEnd = TraceStart + FMath::VRandCone(ViewRotation.Vector(), FMath::DegreesToRadians(ShotSpread)) * TraceMaxDistance;
 		
 		return true;
 	}

@@ -28,10 +28,16 @@ void USTUWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-void USTUWeaponComponent::Fire()
+void USTUWeaponComponent::StartFire()
 {
 	if (CurrentWeapon)
-		CurrentWeapon->Fire();
+		CurrentWeapon->StartFire();
+}
+
+void USTUWeaponComponent::StopFire()
+{
+	if (CurrentWeapon)
+		CurrentWeapon->StopFire();
 }
 
 void USTUWeaponComponent::SpawnWeapon()

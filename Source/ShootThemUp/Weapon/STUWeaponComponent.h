@@ -35,7 +35,10 @@ protected:
 
 public:
 	UFUNCTION(BlueprintCallable)
-	void Fire();
+	void StartFire();
+
+	UFUNCTION(BlueprintCallable)
+	void StopFire();
 
 private:
 	void SpawnWeapon();

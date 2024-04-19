@@ -64,7 +64,8 @@ void ASTUBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAction("Run", IE_Pressed, Cast<USTUCharacterMovementComponent>(GetCharacterMovement()), &USTUCharacterMovementComponent::StartRunning);
 	PlayerInputComponent->BindAction("Run", IE_Released, Cast<USTUCharacterMovementComponent>(GetCharacterMovement()), &USTUCharacterMovementComponent::StopRunning);
 
-	PlayerInputComponent->BindAction("Fire", IE_Released, WeaponComponent, &USTUWeaponComponent::Fire);
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, WeaponComponent, &USTUWeaponComponent::StartFire);
+	PlayerInputComponent->BindAction("Fire", IE_Released, WeaponComponent, &USTUWeaponComponent::StopFire);
 }
 
 FVector ASTUBaseCharacter::GetInputVelocity() const
