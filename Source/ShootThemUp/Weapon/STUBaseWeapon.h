@@ -25,16 +25,22 @@ public:
 	FName MuzzleSocket = "MuzzleSocket";
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon") 
-	float DamageAmount = 34.f;
+	float DamageAmount = 26.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	float ShotRate = 0.1f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon") 
-	float ShotSpread = 0.25f;
+	float ShotSpread = 0.05f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon") 
-	float TraceMaxDistance = 20000.f;
+	float RecoilVertical = 7.5f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon") 
+	float RecoilHorizontal = 5.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon") 
+	float TraceMaxDistance = 10000.f;
 
 protected:
 	// Called when the game starts or when spawned
@@ -52,6 +58,8 @@ public:
 
 protected:
 	void MakeShot();
+	void MakeRecoil(float DeltaTime);
+
 	FVector GetMuzzleWorldLocation() const;
 
 	APlayerController* GetPlayerController() const;
@@ -63,5 +71,6 @@ protected:
 	void MakeDamage(const FHitResult& HitResult);
 
 private:
-	FTimerHandle ShotTimerHandle;
+	bool bWantToFire = false;
+	float LastShotElapsed = 0.f;
 };

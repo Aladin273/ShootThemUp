@@ -10,7 +10,7 @@ DEFINE_LOG_CATEGORY_STATIC(LogBaseWeapon, All, All)
 
 ASTUBaseWeapon::ASTUBaseWeapon()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>("WeaponMesh");
 	SetRootComponent(WeaponMesh);
@@ -23,17 +23,29 @@ void ASTUBaseWeapon::BeginPlay()
 void ASTUBaseWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	LastShotElapsed = FMath::Clamp(LastShotElapsed + DeltaTime, 0.f, ShotRate);
+	
+	if (bWantToFire && LastShotElapsed >= ShotRate)
+	{
+		MakeShot();
+		LastShotElapsed = 0.f;
+	}
+
+	if (LastShotElapsed < ShotRate)
+	{
+		MakeRecoil(DeltaTime);
+	}
 }
 
 void ASTUBaseWeapon::StartFire()
 {
-	MakeShot();
-	GetWorld()->GetTimerManager().SetTimer(ShotTimerHandle, this, &ASTUBaseWeapon::MakeShot, ShotRate, true);
+	bWantToFire = true;
 }
 
 void ASTUBaseWeapon::StopFire()
 {
-	GetWorld()->GetTimerManager().ClearTimer(ShotTimerHandle);
+	bWantToFire = false;
 }
 
 void ASTUBaseWeapon::MakeShot()
@@ -49,17 +61,25 @@ void ASTUBaseWeapon::MakeShot()
 		{
 			MakeDamage(HitResult);
 
-			DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), HitResult.ImpactPoint, FColor::Red, false, 3.0f, 0.f, 3.f);
+			DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), HitResult.ImpactPoint, FColor::Blue, false, 1.0f, 0.f, 3.f);
 			DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10.f, 24, FColor::Red, false, 3.0f);
 		}
 		else
 		{
-			DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), TraceEnd, FColor::Red, false, 3.0f, 0.f, 3.f);
+			DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), TraceEnd, FColor::Blue, false, 1.0f, 0.f, 3.f);
 		}
 	}
+}
 
-	// ShotSpread
-	//GetPlayerController()->AddPitchInput(-ShotSpread);
+void ASTUBaseWeapon::MakeRecoil(float DeltaTime)
+{
+	APlayerController* Controller = GetPlayerController();
+
+	if (Controller)
+	{
+		Controller->AddPitchInput(FMath::FRandRange(-RecoilVertical, -RecoilVertical / 2) * DeltaTime);
+		Controller->AddYawInput(FMath::FRandRange(-RecoilHorizontal, RecoilHorizontal) * DeltaTime);
+	}
 }
 
 FVector ASTUBaseWeapon::GetMuzzleWorldLocation() const
