@@ -10,7 +10,7 @@ DEFINE_LOG_CATEGORY_STATIC(LogBaseWeapon, All, All)
 
 ASTUBaseWeapon::ASTUBaseWeapon()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>("WeaponMesh");
 	SetRootComponent(WeaponMesh);
@@ -23,29 +23,16 @@ void ASTUBaseWeapon::BeginPlay()
 void ASTUBaseWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	LastShotElapsed = FMath::Clamp(LastShotElapsed + DeltaTime, 0.f, ShotRate);
-	
-	if (bWantToFire && LastShotElapsed >= ShotRate)
-	{
-		MakeShot();
-		LastShotElapsed = 0.f;
-	}
-
-	if (LastShotElapsed < ShotRate)
-	{
-		MakeRecoil(DeltaTime);
-	}
 }
 
 void ASTUBaseWeapon::StartFire()
 {
-	bWantToFire = true;
+	MakeShot();
 }
 
 void ASTUBaseWeapon::StopFire()
 {
-	bWantToFire = false;
+	// TODO
 }
 
 void ASTUBaseWeapon::MakeShot()
@@ -56,7 +43,7 @@ void ASTUBaseWeapon::MakeShot()
 	{
 		FHitResult HitResult;
 		MakeHit(HitResult, TraceStart, TraceEnd);
-		
+
 		if (HitResult.bBlockingHit)
 		{
 			MakeDamage(HitResult);
@@ -71,20 +58,36 @@ void ASTUBaseWeapon::MakeShot()
 	}
 }
 
-void ASTUBaseWeapon::MakeRecoil(float DeltaTime)
+bool ASTUBaseWeapon::GetTraceData(FVector& TraceStart, FVector& TraceEnd)
 {
-	APlayerController* Controller = GetPlayerController();
+    FVector ViewLocation;
+    FRotator ViewRotation;
 
-	if (Controller)
-	{
-		Controller->AddPitchInput(FMath::FRandRange(-RecoilVertical, -RecoilVertical / 2) * DeltaTime);
-		Controller->AddYawInput(FMath::FRandRange(-RecoilHorizontal, RecoilHorizontal) * DeltaTime);
-	}
+    if (GetPlayerViewPoint(ViewLocation, ViewRotation))
+    {
+        TraceStart = ViewLocation;
+        TraceEnd = TraceStart + ViewRotation.Vector() * TraceMaxDistance;
+
+        return true;
+    }
+
+	return false;
 }
 
-FVector ASTUBaseWeapon::GetMuzzleWorldLocation() const
+void ASTUBaseWeapon::MakeHit(FHitResult& HitResult, const FVector& TraceStart, const FVector& TraceEnd)
 {
-	return WeaponMesh->GetSocketLocation(MuzzleSocket);
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(GetOwner());
+
+	GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECollisionChannel::ECC_Visibility, CollisionParams);
+}
+
+void ASTUBaseWeapon::MakeDamage(const FHitResult& HitResult)
+{
+	AActor* DamagedActor = HitResult.GetActor();
+
+	if (DamagedActor)
+		DamagedActor->TakeDamage(DamageAmount, {}, GetPlayerController(), this);
 }
 
 APlayerController* ASTUBaseWeapon::GetPlayerController() const
@@ -110,38 +113,7 @@ bool ASTUBaseWeapon::GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRot
 	return false;
 }
 
-bool ASTUBaseWeapon::GetTraceData(FVector& TraceStart, FVector& TraceEnd)
+FVector ASTUBaseWeapon::GetMuzzleWorldLocation() const
 {
-	FVector ViewLocation;
-	FRotator ViewRotation;
-	
-	if (GetPlayerViewPoint(ViewLocation, ViewRotation))
-	{
-		TraceStart = ViewLocation;
-		TraceEnd = TraceStart + ViewRotation.Vector() * TraceMaxDistance;
-		
-		// ShotSpread
-		//TraceEnd = TraceStart + FMath::VRandCone(ViewRotation.Vector(), FMath::DegreesToRadians(ShotSpread)) * TraceMaxDistance;
-		
-		return true;
-	}
-
-	return false;
+	return WeaponMesh->GetSocketLocation(MuzzleSocket);
 }
-
-void ASTUBaseWeapon::MakeHit(FHitResult& HitResult, const FVector& TraceStart, const FVector& TraceEnd)
-{
-	FCollisionQueryParams CollisionParams;
-	CollisionParams.AddIgnoredActor(GetOwner());
-
-	GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECollisionChannel::ECC_Visibility, CollisionParams);
-}
-
-void ASTUBaseWeapon::MakeDamage(const FHitResult& HitResult)
-{
-	AActor* DamagedActor = HitResult.GetActor();
-
-	if (DamagedActor)
-		DamagedActor->TakeDamage(DamageAmount, {}, GetPlayerController(), this);
-}
-
