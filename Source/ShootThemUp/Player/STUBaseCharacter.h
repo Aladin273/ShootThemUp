@@ -44,7 +44,7 @@ public:
 	UAnimMontage* FallAnimMontage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
-	float DeathLifeSpan = 3.f;
+	float DeathLifeSpan = 30.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
 	float FallDelay = 0.4f;

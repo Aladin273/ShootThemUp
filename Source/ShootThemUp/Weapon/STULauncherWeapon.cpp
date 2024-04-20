@@ -2,6 +2,8 @@
 
 #include "STULauncherWeapon.h"
 
+#include "STUProjectile.h"
+
 ASTULauncherWeapon::ASTULauncherWeapon()
 {
 	PrimaryActorTick.bCanEverTick = false;
@@ -19,17 +21,46 @@ void ASTULauncherWeapon::Tick(float DeltaTime)
 
 void ASTULauncherWeapon::StartFire()
 {
-	Super::StartFire();
+	MakeShot();
 }
 
 void ASTULauncherWeapon::StopFire()
 {
-	Super::StopFire();
+	// Possible Override
 }
 
 void ASTULauncherWeapon::MakeShot()
 {
-	Super::MakeShot();
+	FVector TraceStart, TraceEnd;
+
+	if (GetTraceData(TraceStart, TraceEnd))
+	{
+		FHitResult HitResult;
+		MakeHit(HitResult, TraceStart, TraceEnd);
+
+		FVector EndPoint = HitResult.bBlockingHit ? HitResult.ImpactPoint : TraceEnd;
+		FVector Direction = (EndPoint - GetMuzzleWorldLocation()).GetSafeNormal();
+
+		FTransform SpawnTransform(FRotator::ZeroRotator, GetMuzzleWorldLocation());
+		ASTUProjectile* Projectile = GetWorld()->SpawnActorDeferred<ASTUProjectile>(ProjectileClass, SpawnTransform);
+
+		if (Projectile)
+		{
+			Projectile->SetOwner(GetOwner());
+			Projectile->SetShotDirection(Direction);
+			Projectile->FinishSpawning(SpawnTransform);
+		}
+
+		if (HitResult.bBlockingHit)
+		{
+			DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), HitResult.ImpactPoint, FColor::Blue, false, 1.0f, 0.f, 3.f);
+			DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10.f, 24, FColor::Red, false, 3.0f);
+		}
+		else
+		{
+			DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), TraceEnd, FColor::Blue, false, 1.0f, 0.f, 3.f);
+		}
+	}
 }
 
 bool ASTULauncherWeapon::GetTraceData(FVector& TraceStart, FVector& TraceEnd)

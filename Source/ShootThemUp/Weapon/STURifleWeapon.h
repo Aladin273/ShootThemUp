@@ -16,11 +16,14 @@ public:
 	// Sets default values for this component's properties
 	ASTURifleWeapon();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon") 
+	float DamageAmount = 26.f;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	float ShotRate = 0.1f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
-	float RecoilDuration = 0.1f;
+	float RecoilDuration = 0.05f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon") 
 	float RecoilVertical = 0.5f;
@@ -37,14 +40,15 @@ protected:
 
 public:
 	virtual void StartFire() override;
-
 	virtual void StopFire() override;
 
 protected:
 	virtual void MakeShot() override;
 	virtual bool GetTraceData(FVector& TraceStart, FVector& TraceEnd) override;
-	
+
 private:
+	void MakeDamage(const FHitResult& HitResult);
+
 	bool bWantToFire = false;
 	bool bWantToRecoil = false;
 	

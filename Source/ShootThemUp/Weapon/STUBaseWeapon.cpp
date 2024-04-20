@@ -32,7 +32,7 @@ void ASTUBaseWeapon::StartFire()
 
 void ASTUBaseWeapon::StopFire()
 {
-	// TODO
+	// Possible Override
 }
 
 void ASTUBaseWeapon::MakeShot()
@@ -46,8 +46,6 @@ void ASTUBaseWeapon::MakeShot()
 
 		if (HitResult.bBlockingHit)
 		{
-			MakeDamage(HitResult);
-
 			DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), HitResult.ImpactPoint, FColor::Blue, false, 1.0f, 0.f, 3.f);
 			DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10.f, 24, FColor::Red, false, 3.0f);
 		}
@@ -82,12 +80,9 @@ void ASTUBaseWeapon::MakeHit(FHitResult& HitResult, const FVector& TraceStart, c
 	GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECollisionChannel::ECC_Visibility, CollisionParams);
 }
 
-void ASTUBaseWeapon::MakeDamage(const FHitResult& HitResult)
+FVector ASTUBaseWeapon::GetMuzzleWorldLocation() const
 {
-	AActor* DamagedActor = HitResult.GetActor();
-
-	if (DamagedActor)
-		DamagedActor->TakeDamage(DamageAmount, {}, GetPlayerController(), this);
+	return WeaponMesh->GetSocketLocation(MuzzleSocket);
 }
 
 APlayerController* ASTUBaseWeapon::GetPlayerController() const
@@ -111,9 +106,4 @@ bool ASTUBaseWeapon::GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRot
 	}
 
 	return false;
-}
-
-FVector ASTUBaseWeapon::GetMuzzleWorldLocation() const
-{
-	return WeaponMesh->GetSocketLocation(MuzzleSocket);
 }
