@@ -25,6 +25,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	FName WeaponArmorySocket = "ArmorySocket";
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* EquipAnimMontage;
 
 protected:
 	// Called when the game starts
@@ -48,9 +51,15 @@ public:
 
 private:
 	void SpawnWeapons();
-	void EquipWeapon(int32 Index);
 	
+	void EquipWeapon(int32 Index);
 	void AttachToSocket(ASTUBaseWeapon* Weapon, USceneComponent* Component, FName SocketName);
+	
+	void InitAnimations();
+	void PlayAnimMontage(UAnimMontage* AnimMontage);
+
+	UFUNCTION()
+	void OnEquipFinished(USkeletalMeshComponent* MeshComp);
 
 	UPROPERTY()
 	TArray<ASTUBaseWeapon*> Weapons;
