@@ -66,6 +66,8 @@ void ASTUBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, WeaponComponent, &USTUWeaponComponent::StartFire);
 	PlayerInputComponent->BindAction("Fire", IE_Released, WeaponComponent, &USTUWeaponComponent::StopFire);
+
+	PlayerInputComponent->BindAction("NextWeapon", IE_Pressed, WeaponComponent, &USTUWeaponComponent::NextWeapon);
 }
 
 FVector ASTUBaseCharacter::GetInputVelocity() const
@@ -87,6 +89,8 @@ void ASTUBaseCharacter::OnDeath()
 	GetMesh()->SetSimulatePhysics(true);
 	GetMesh()->SetCollisionProfileName("BlockAll");
 	GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+
+	WeaponComponent->StopFire();
 
 	GetCharacterMovement()->SetMovementMode(MOVE_None);
 	SetLifeSpan(DeathLifeSpan);

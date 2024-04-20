@@ -18,10 +18,13 @@ public:
 	USTUWeaponComponent();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
-	TSubclassOf<ASTUBaseWeapon> WeaponClass;
+	TArray<TSubclassOf<ASTUBaseWeapon>> WeaponClasses;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
-	FName WeaponSocket = "WeaponSocket";
+	FName WeaponEquipSocket = "WeaponSocket";
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+	FName WeaponArmorySocket = "ArmorySocket";
 
 protected:
 	// Called when the game starts
@@ -40,9 +43,20 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void StopFire();
 
+	UFUNCTION(BlueprintCallable)
+	void NextWeapon();
+
 private:
-	void SpawnWeapon();
+	void SpawnWeapons();
+	void EquipWeapon(int32 Index);
+	
+	void AttachToSocket(ASTUBaseWeapon* Weapon, USceneComponent* Component, FName SocketName);
 
 	UPROPERTY()
+	TArray<ASTUBaseWeapon*> Weapons;
+	
+	UPROPERTY()
 	ASTUBaseWeapon* CurrentWeapon;
+
+	int32 CurrentWeaponIndex = 0;
 };
