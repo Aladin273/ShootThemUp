@@ -9,7 +9,24 @@
 class APlayerController;
 class USkeletalMeshComponent;
 
-UCLASS()
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEmptyClipSignature); // C++ & BP
+
+USTRUCT(BlueprintType)
+struct FAmmoData
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon") 
+	int32 Bullets = 30;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon", meta = (EditCondition = "!bInfinite"))
+	int32 Clips = 3;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon") 
+	bool bInfinite = false;
+};
+
+UCLASS(Blueprintable)
 class SHOOTTHEMUP_API ASTUBaseWeapon : public AActor
 {
 	GENERATED_BODY()
@@ -23,6 +40,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	FName MuzzleSocket = "MuzzleSocket";
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon") 
+	FAmmoData DefaultAmmo{};
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon") 
 	float TraceMaxDistance = 10000.f;
@@ -41,7 +61,21 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual void StopFire();
 
+	UFUNCTION(BlueprintCallable)
+	void Reload();
+
+	UFUNCTION(BlueprintCallable)
+	bool CanReload() const;
+
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
+	FOnEmptyClipSignature OnEmptyClip;
+
 protected:
+	void DecreaseAmmo();
+	bool IsAmmoEmpty() const;
+	bool IsClipEmpty() const;
+	void LogAmmo();
+
 	virtual void MakeShot();
 	virtual bool GetTraceData(FVector& TraceStart, FVector& TraceEnd);
 	
@@ -52,5 +86,5 @@ protected:
 	bool GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRotation) const;
 
 private:
-	FTimerHandle ShotTimerHandle;
+	FAmmoData CurrentAmmo;
 };

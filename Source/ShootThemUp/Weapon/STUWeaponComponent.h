@@ -8,6 +8,28 @@
 
 class ASTUBaseWeapon;
 
+USTRUCT(BlueprintType)
+struct FWeaponData
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon") 
+	TSubclassOf<ASTUBaseWeapon> WeaponClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+	UAnimMontage* ReloadAnimMontage;
+};
+
+USTRUCT(BlueprintType)
+struct FWeaponDataInternal
+{
+	GENERATED_USTRUCT_BODY()
+
+	ASTUBaseWeapon* Weapon;
+	UAnimMontage* ReloadAnimMontage;
+};
+
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class SHOOTTHEMUP_API USTUWeaponComponent : public UActorComponent
 {
@@ -18,7 +40,7 @@ public:
 	USTUWeaponComponent();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
-	TArray<TSubclassOf<ASTUBaseWeapon>> WeaponClasses;
+	TArray<FWeaponData> WeaponData;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	FName WeaponEquipSocket = "WeaponSocket";
@@ -26,7 +48,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	FName WeaponArmorySocket = "ArmorySocket";
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	UAnimMontage* EquipAnimMontage;
 
 protected:
@@ -49,27 +71,37 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void NextWeapon();
 
+	UFUNCTION(BlueprintCallable)
+	void Reload();
+
 private:
 	bool CanFire() const;
 	bool CanEquip() const;
+	bool CanReload() const;
 
+	void InitAnimations();
 	void SpawnWeapons();
-	
 	void EquipWeapon(int32 Index);
 	void AttachToSocket(ASTUBaseWeapon* Weapon, USceneComponent* Component, FName SocketName);
-	
-	void InitAnimations();
+
 	void PlayAnimMontage(UAnimMontage* AnimMontage);
 
 	UFUNCTION()
 	void OnEquipFinished(USkeletalMeshComponent* MeshComp);
 	bool bEquipAnimInProgress = false;
 
+	UFUNCTION()
+	void OnReloadFinished(USkeletalMeshComponent* MeshComp);
+	bool bReloadAnimInProgress = false;
+
 	UPROPERTY()
-	TArray<ASTUBaseWeapon*> Weapons;
-	
+	TArray<FWeaponDataInternal> Weapons;
+
 	UPROPERTY()
 	ASTUBaseWeapon* CurrentWeapon;
+
+	UPROPERTY()
+	UAnimMontage* CurrentReloadAnimMontage;
 
 	int32 CurrentWeaponIndex = 0;
 };

@@ -18,6 +18,8 @@ ASTUBaseWeapon::ASTUBaseWeapon()
 void ASTUBaseWeapon::BeginPlay()
 {
 	Super::BeginPlay();
+
+	CurrentAmmo = DefaultAmmo;
 }
 
 void ASTUBaseWeapon::Tick(float DeltaTime)
@@ -35,25 +37,84 @@ void ASTUBaseWeapon::StopFire()
 	// Possible Override
 }
 
+void ASTUBaseWeapon::Reload()
+{
+	if (!CurrentAmmo.bInfinite)
+	{
+		if (CurrentAmmo.Clips == 0)
+			return;
+
+		CurrentAmmo.Clips = CurrentAmmo.Clips - 1;
+	}
+
+	CurrentAmmo.Bullets = DefaultAmmo.Bullets;
+	UE_LOG(LogBaseWeapon, Display, TEXT("Ammo: Change Clip"));
+}
+
+bool ASTUBaseWeapon::CanReload() const
+{
+	return CurrentAmmo.Bullets < DefaultAmmo.Bullets && CurrentAmmo.Clips > 0;
+}
+
+void ASTUBaseWeapon::DecreaseAmmo()
+{
+	if (CurrentAmmo.Bullets == 0)
+		return;
+
+	CurrentAmmo.Bullets--;
+	LogAmmo();
+
+	if (IsClipEmpty() && !IsAmmoEmpty())
+	{
+		StopFire();
+		OnEmptyClip.Broadcast();
+	}
+}
+
+bool ASTUBaseWeapon::IsAmmoEmpty() const
+{
+	return !CurrentAmmo.bInfinite && CurrentAmmo.Clips == 0 && CurrentAmmo.Bullets == 0;
+}
+
+bool ASTUBaseWeapon::IsClipEmpty() const
+{
+	return CurrentAmmo.Bullets == 0;
+}
+
+void ASTUBaseWeapon::LogAmmo()
+{
+	FString AmmoInfo;
+
+	AmmoInfo += "Ammo: " + FString::FromInt(CurrentAmmo.Bullets) + " / ";
+	AmmoInfo += CurrentAmmo.bInfinite ? "Infinite" : FString::FromInt(CurrentAmmo.Clips);
+
+	UE_LOG(LogBaseWeapon, Display, TEXT("%s"), *AmmoInfo);
+}
+
 void ASTUBaseWeapon::MakeShot()
 {
 	FVector TraceStart, TraceEnd;
 
-	if (GetTraceData(TraceStart, TraceEnd))
+	if (IsAmmoEmpty() || !GetTraceData(TraceStart, TraceEnd))
 	{
-		FHitResult HitResult;
-		MakeHit(HitResult, TraceStart, TraceEnd);
-
-		if (HitResult.bBlockingHit)
-		{
-			DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), HitResult.ImpactPoint, FColor::Blue, false, 1.0f, 0.f, 3.f);
-			DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10.f, 24, FColor::Red, false, 3.0f);
-		}
-		else
-		{
-			DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), TraceEnd, FColor::Blue, false, 1.0f, 0.f, 3.f);
-		}
+		StopFire();
+		return;
 	}
+
+	FHitResult HitResult;
+	MakeHit(HitResult, TraceStart, TraceEnd);
+
+	if (HitResult.bBlockingHit)
+	{
+		DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), HitResult.ImpactPoint, FColor::Blue, false, 1.0f, 0.f, 3.f);
+		DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10.f, 24, FColor::Red, false, 3.0f);
+	}
+	else
+	{
+		DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), TraceEnd, FColor::Blue, false, 1.0f, 0.f, 3.f);
+	}
+
+	DecreaseAmmo();
 }
 
 bool ASTUBaseWeapon::GetTraceData(FVector& TraceStart, FVector& TraceEnd)

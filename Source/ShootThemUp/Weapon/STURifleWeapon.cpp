@@ -23,7 +23,7 @@ void ASTURifleWeapon::Tick(float DeltaTime)
 	if (bWantToFire && LastShotElapsed >= ShotRate)
 	{
 		MakeShot();
-		bWantToRecoil = true;
+		bWantToRecoil = bWantToFire;
 		
 		LastShotElapsed = 0.f;
 		LastRecoilElapsed = 0.f;
@@ -62,24 +62,29 @@ void ASTURifleWeapon::StopFire()
 void ASTURifleWeapon::MakeShot()
 {
 	FVector TraceStart, TraceEnd;
-
-	if (GetTraceData(TraceStart, TraceEnd))
+	
+	if (IsAmmoEmpty() || !GetTraceData(TraceStart, TraceEnd))
 	{
-		FHitResult HitResult;
-		MakeHit(HitResult, TraceStart, TraceEnd);
-
-		if (HitResult.bBlockingHit)
-		{
-			MakeDamage(HitResult);
-
-			DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), HitResult.ImpactPoint, FColor::Blue, false, 1.0f, 0.f, 3.f);
-			DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10.f, 24, FColor::Red, false, 3.0f);
-		}
-		else
-		{
-			DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), TraceEnd, FColor::Blue, false, 1.0f, 0.f, 3.f);
-		}
+		StopFire();
+		return;
 	}
+
+	FHitResult HitResult;
+	MakeHit(HitResult, TraceStart, TraceEnd);
+
+	if (HitResult.bBlockingHit)
+	{
+		MakeDamage(HitResult);
+
+		DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), HitResult.ImpactPoint, FColor::Blue, false, 1.0f, 0.f, 3.f);
+		DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10.f, 24, FColor::Red, false, 3.0f);
+	}
+	else
+	{
+		DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), TraceEnd, FColor::Blue, false, 1.0f, 0.f, 3.f);
+	}
+
+	DecreaseAmmo();
 }
 
 bool ASTURifleWeapon::GetTraceData(FVector& TraceStart, FVector& TraceEnd)
