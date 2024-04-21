@@ -50,6 +50,9 @@ public:
 	void NextWeapon();
 
 private:
+	bool CanFire() const;
+	bool CanEquip() const;
+
 	void SpawnWeapons();
 	
 	void EquipWeapon(int32 Index);
@@ -60,6 +63,7 @@ private:
 
 	UFUNCTION()
 	void OnEquipFinished(USkeletalMeshComponent* MeshComp);
+	bool bEquipAnimInProgress = false;
 
 	UPROPERTY()
 	TArray<ASTUBaseWeapon*> Weapons;
