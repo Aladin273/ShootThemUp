@@ -7,6 +7,7 @@
 #include "STUWeaponComponent.generated.h"
 
 class ASTUBaseWeapon;
+struct FWeaponDataInternal;
 
 USTRUCT(BlueprintType)
 struct FWeaponData
@@ -19,16 +20,6 @@ struct FWeaponData
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	UAnimMontage* ReloadAnimMontage;
 };
-
-USTRUCT(BlueprintType)
-struct FWeaponDataInternal
-{
-	GENERATED_USTRUCT_BODY()
-
-	ASTUBaseWeapon* Weapon;
-	UAnimMontage* ReloadAnimMontage;
-};
-
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class SHOOTTHEMUP_API USTUWeaponComponent : public UActorComponent
@@ -51,6 +42,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	UAnimMontage* EquipAnimMontage;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+	bool bAutoReload = true;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -67,6 +61,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void StopFire();
+
+	UFUNCTION(BlueprintCallable)
+	bool IsFiring() const;
 
 	UFUNCTION(BlueprintCallable)
 	void NextWeapon();
@@ -97,14 +94,13 @@ private:
 	UFUNCTION()
 	void OnMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 
-	UPROPERTY()
+	struct FWeaponDataInternal
+	{
+		ASTUBaseWeapon* Weapon;
+		UAnimMontage* ReloadAnimMontage;
+	};
+
 	TArray<FWeaponDataInternal> Weapons;
-
-	UPROPERTY()
-	ASTUBaseWeapon* CurrentWeapon;
-
-	UPROPERTY()
-	UAnimMontage* CurrentReloadAnimMontage;
-
+	FWeaponDataInternal CurrentWeapon;	
 	int32 CurrentWeaponIndex = 0;
 };

@@ -41,16 +41,15 @@ protected:
 public:
 	virtual void StartFire() override;
 	virtual void StopFire() override;
+	virtual bool IsFiring() const override;
 
 protected:
 	virtual void MakeShot() override;
 	virtual bool GetTraceData(FVector& TraceStart, FVector& TraceEnd) override;
 
 private:
-	void MakeDamage(const FHitResult& HitResult);
-
-	bool bWantToFire = false;
-	bool bWantToRecoil = false;
+	bool bWantsToFire = false;
+	bool bWantsToRecoil = false;
 	
 	float LastShotElapsed = 0.f;
 	float LastRecoilElapsed = 0.f;

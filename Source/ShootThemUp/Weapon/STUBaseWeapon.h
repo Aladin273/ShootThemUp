@@ -42,7 +42,7 @@ public:
 	FName MuzzleSocket = "MuzzleSocket";
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon") 
-	FAmmoData DefaultAmmo{};
+	FAmmoData DefaultAmmo;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon") 
 	float TraceMaxDistance = 10000.f;
@@ -60,6 +60,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual void StopFire();
+	
+	UFUNCTION(BlueprintCallable)
+	virtual bool IsFiring() const;
 
 	UFUNCTION(BlueprintCallable)
 	void Reload();

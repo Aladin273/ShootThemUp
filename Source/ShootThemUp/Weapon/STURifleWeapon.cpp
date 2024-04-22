@@ -20,10 +20,10 @@ void ASTURifleWeapon::Tick(float DeltaTime)
 	LastShotElapsed = FMath::Clamp(LastShotElapsed + DeltaTime, 0.f, ShotRate);
 	LastRecoilElapsed = FMath::Clamp(LastRecoilElapsed + DeltaTime, 0.f, RecoilDuration);
 
-	if (bWantToFire && LastShotElapsed >= ShotRate)
+	if (bWantsToFire && LastShotElapsed >= ShotRate)
 	{
 		MakeShot();
-		bWantToRecoil = bWantToFire;
+		bWantsToRecoil = bWantsToFire;
 		
 		LastShotElapsed = 0.f;
 		LastRecoilElapsed = 0.f;
@@ -32,7 +32,7 @@ void ASTURifleWeapon::Tick(float DeltaTime)
 		RecoilTargetHorizontal = FMath::FRandRange(-RecoilHorizontal, RecoilHorizontal);
 	}
 
-	if (bWantToRecoil && LastRecoilElapsed < RecoilDuration)
+	if (bWantsToRecoil && LastRecoilElapsed < RecoilDuration)
 	{
 		APlayerController* Controller = GetPlayerController();
 
@@ -44,19 +44,24 @@ void ASTURifleWeapon::Tick(float DeltaTime)
 	}
 	else
 	{
-		bWantToRecoil = false;
+		bWantsToRecoil = false;
 		LastRecoilElapsed = 0.f;
 	}
 }
 
 void ASTURifleWeapon::StartFire()
 {
-	bWantToFire = true;
+	bWantsToFire = true;
 }
 
 void ASTURifleWeapon::StopFire()
 {
-	bWantToFire = false;
+	bWantsToFire = false;
+}
+
+bool ASTURifleWeapon::IsFiring() const
+{
+	return bWantsToFire;
 }
 
 void ASTURifleWeapon::MakeShot()
@@ -74,7 +79,10 @@ void ASTURifleWeapon::MakeShot()
 
 	if (HitResult.bBlockingHit)
 	{
-		MakeDamage(HitResult);
+		AActor* DamagedActor = HitResult.GetActor();
+
+		if (DamagedActor)
+			DamagedActor->TakeDamage(DamageAmount, {}, GetPlayerController(), this);
 
 		DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), HitResult.ImpactPoint, FColor::Blue, false, 1.0f, 0.f, 3.f);
 		DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10.f, 24, FColor::Red, false, 3.0f);
@@ -90,12 +98,4 @@ void ASTURifleWeapon::MakeShot()
 bool ASTURifleWeapon::GetTraceData(FVector& TraceStart, FVector& TraceEnd)
 {
 	return Super::GetTraceData(TraceStart, TraceEnd);
-}
-
-void ASTURifleWeapon::MakeDamage(const FHitResult& HitResult)
-{
-	AActor* DamagedActor = HitResult.GetActor();
-
-	if (DamagedActor)
-		DamagedActor->TakeDamage(DamageAmount, {}, GetPlayerController(), this);
 }

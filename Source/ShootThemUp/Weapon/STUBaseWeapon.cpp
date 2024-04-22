@@ -37,6 +37,11 @@ void ASTUBaseWeapon::StopFire()
 	// Possible Override
 }
 
+bool ASTUBaseWeapon::IsFiring() const
+{
+    return false;
+}
+
 void ASTUBaseWeapon::Reload()
 {
 	if (!CurrentAmmo.bInfinite)
@@ -47,27 +52,30 @@ void ASTUBaseWeapon::Reload()
 		CurrentAmmo.Clips = CurrentAmmo.Clips - 1;
 	}
 
-	CurrentAmmo.Bullets = DefaultAmmo.Bullets;
-	UE_LOG(LogBaseWeapon, Display, TEXT("Ammo: Change Clip"));
+	CurrentAmmo.Bullets = DefaultAmmo.Bullets;	
+	UE_LOG(LogBaseWeapon, Display, TEXT("Ammo: Reload"));
+	
+	StopFire();
+	LogAmmo();
 }
 
 bool ASTUBaseWeapon::CanReload() const
 {
-	return CurrentAmmo.Bullets < DefaultAmmo.Bullets && CurrentAmmo.Clips > 0;
+	return CurrentAmmo.Bullets < DefaultAmmo.Bullets && (CurrentAmmo.Clips > 0 || CurrentAmmo.bInfinite);
 }
 
 void ASTUBaseWeapon::DecreaseAmmo()
 {
-	if (CurrentAmmo.Bullets == 0)
-		return;
-
-	CurrentAmmo.Bullets--;
-	LogAmmo();
-
-	if (IsClipEmpty() && !IsAmmoEmpty())
+	if (CurrentAmmo.Bullets > 0)
 	{
-		StopFire();
-		OnEmptyClip.Broadcast();
+		CurrentAmmo.Bullets--;
+		LogAmmo();
+
+		if (IsClipEmpty() && !IsAmmoEmpty())
+		{
+			StopFire();
+			OnEmptyClip.Broadcast();
+		}
 	}
 }
 

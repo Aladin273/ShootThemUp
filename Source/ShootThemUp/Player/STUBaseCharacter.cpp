@@ -30,6 +30,8 @@ ASTUBaseCharacter::ASTUBaseCharacter(const FObjectInitializer& ObjInit)
 
 	HealthComponent = CreateDefaultSubobject<USTUHealthComponent>("HealthComponent");
 	WeaponComponent = CreateDefaultSubobject<USTUWeaponComponent>("WeaponComponent");
+
+	CharacterMovementComponent = Cast<USTUCharacterMovementComponent>(GetCharacterMovement());
 }
 
 void ASTUBaseCharacter::BeginPlay()
@@ -61,11 +63,11 @@ void ASTUBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ASTUBaseCharacter::Jump);
 
-	PlayerInputComponent->BindAction("Run", IE_Pressed, Cast<USTUCharacterMovementComponent>(GetCharacterMovement()), &USTUCharacterMovementComponent::StartRunning);
-	PlayerInputComponent->BindAction("Run", IE_Released, Cast<USTUCharacterMovementComponent>(GetCharacterMovement()), &USTUCharacterMovementComponent::StopRunning);
+	PlayerInputComponent->BindAction("Run", IE_Pressed, this, &ASTUBaseCharacter::StartRunning);
+	PlayerInputComponent->BindAction("Run", IE_Released, this, &ASTUBaseCharacter::StopRunning);
 
-	PlayerInputComponent->BindAction("Fire", IE_Pressed, WeaponComponent, &USTUWeaponComponent::StartFire);
-	PlayerInputComponent->BindAction("Fire", IE_Released, WeaponComponent, &USTUWeaponComponent::StopFire);
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ASTUBaseCharacter::StartFire);
+	PlayerInputComponent->BindAction("Fire", IE_Released, this, &ASTUBaseCharacter::StopFire);
 
 	PlayerInputComponent->BindAction("NextWeapon", IE_Pressed, WeaponComponent, &USTUWeaponComponent::NextWeapon);
 	PlayerInputComponent->BindAction("Reload", IE_Pressed, WeaponComponent, &USTUWeaponComponent::Reload);
@@ -139,16 +141,27 @@ void ASTUBaseCharacter::OnLand(const FHitResult& Hit)
 	UE_LOG(LogBaseCharacter, Display, TEXT("Landed with Velocity: %.f"), FallVelocityZ);
 }
 
+void ASTUBaseCharacter::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	// Possible Override
+}
+
 void ASTUBaseCharacter::MoveForward(float Amount)
 {
 	InputVelocity.X = Amount;
 	AddMovementInput(GetActorForwardVector(), Amount);
+
+	if (CharacterMovementComponent->IsRunning() && WeaponComponent->IsFiring())
+		WeaponComponent->StopFire();
 }
 
 void ASTUBaseCharacter::MoveRight(float Amount)
 {
 	InputVelocity.Y = Amount;
 	AddMovementInput(GetActorRightVector(), Amount);
+
+	if (CharacterMovementComponent->IsRunning() && WeaponComponent->IsFiring())
+		WeaponComponent->StopFire();
 }
 
 void ASTUBaseCharacter::LookUp(float Amount)
@@ -159,4 +172,28 @@ void ASTUBaseCharacter::LookUp(float Amount)
 void ASTUBaseCharacter::LookAround(float Amount)
 {
 	AddControllerYawInput(Amount);
+}
+
+void ASTUBaseCharacter::StartRunning()
+{	
+	CharacterMovementComponent->StartRunning();
+
+	if (CharacterMovementComponent->IsRunning())
+		WeaponComponent->StopFire();
+}
+
+void ASTUBaseCharacter::StopRunning()
+{
+	CharacterMovementComponent->StopRunning();
+}
+
+void ASTUBaseCharacter::StartFire()
+{
+	if (!CharacterMovementComponent->IsRunning())
+		WeaponComponent->StartFire();
+}
+
+void ASTUBaseCharacter::StopFire()
+{
+	WeaponComponent->StopFire();
 }

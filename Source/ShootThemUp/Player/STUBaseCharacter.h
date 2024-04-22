@@ -10,6 +10,7 @@ class USpringArmComponent;
 class UCameraComponent;
 class UTextRenderComponent;
 
+class USTUCharacterMovementComponent;
 class USTUHealthComponent;
 class USTUWeaponComponent;
 
@@ -82,6 +83,9 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	virtual void OnLand(const FHitResult& Hit);
 
+	UFUNCTION(BlueprintCallable)
+	virtual void OnMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+
 private:
 	void MoveForward(float Amount);
 	void MoveRight(float Amount);
@@ -89,5 +93,12 @@ private:
 	void LookUp(float Amount);
 	void LookAround(float Amount);
 
+	void StartRunning();
+	void StopRunning();
+
+	void StartFire();
+    void StopFire();
+	
 	FVector InputVelocity = FVector::ZeroVector;
+	USTUCharacterMovementComponent* CharacterMovementComponent = nullptr;
 };

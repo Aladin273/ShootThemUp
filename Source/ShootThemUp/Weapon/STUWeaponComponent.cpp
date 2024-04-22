@@ -5,8 +5,6 @@
 #include "STUBaseWeapon.h"
 #include "GameFramework/Character.h"
 
-#include "PlayMontageCallbackProxy.h"
-
 #include "../Animations/STUEquipFinishedAnimNotify.h"
 #include "../Animations/STUReloadFinishedAnimNotify.h"
 
@@ -29,7 +27,8 @@ void USTUWeaponComponent::BeginPlay()
 
 void USTUWeaponComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	CurrentWeapon = nullptr;
+	CurrentWeapon.Weapon = nullptr;
+	CurrentWeapon.ReloadAnimMontage = nullptr;
 
 	for (auto Weapon : Weapons)
 	{
@@ -50,13 +49,18 @@ void USTUWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 void USTUWeaponComponent::StartFire()
 {
 	if (CanFire())
-		CurrentWeapon->StartFire();
+		CurrentWeapon.Weapon->StartFire();
 }
 
 void USTUWeaponComponent::StopFire()
 {
-	if (CurrentWeapon)
-		CurrentWeapon->StopFire();
+	if (CurrentWeapon.Weapon)
+		CurrentWeapon.Weapon->StopFire();
+}
+
+bool USTUWeaponComponent::IsFiring() const
+{
+	return CurrentWeapon.Weapon && CurrentWeapon.Weapon->IsFiring();
 }
 
 void USTUWeaponComponent::NextWeapon()
@@ -72,17 +76,17 @@ void USTUWeaponComponent::Reload()
 {
 	if (CanReload())
 	{
-		PlayAnimMontage(CurrentReloadAnimMontage);
+		PlayAnimMontage(CurrentWeapon.ReloadAnimMontage);
 		bReloadAnimInProgress = true;
 		
-		CurrentWeapon->Reload();
-		CurrentWeapon->StopFire();
+		CurrentWeapon.Weapon->StopFire();
+		CurrentWeapon.Weapon->Reload();
 	}
 }
 
 bool USTUWeaponComponent::CanFire() const
 {
-	return CurrentWeapon && !bEquipAnimInProgress && !bReloadAnimInProgress;
+	return CurrentWeapon.Weapon && !bEquipAnimInProgress && !bReloadAnimInProgress;
 }
 
 bool USTUWeaponComponent::CanEquip() const
@@ -92,20 +96,19 @@ bool USTUWeaponComponent::CanEquip() const
 
 bool USTUWeaponComponent::CanReload() const
 {
-	return !bEquipAnimInProgress && !bReloadAnimInProgress && CurrentWeapon && CurrentWeapon->CanReload();
+	return !bEquipAnimInProgress && !bReloadAnimInProgress && CurrentWeapon.Weapon && CurrentWeapon.Weapon->CanReload();
 }
 
 void USTUWeaponComponent::InitAnimations()
 {
 	ACharacter* Character = Cast<ACharacter>(GetOwner());
-	
-	// https://forums.unrealengine.com/t/play-montage-in-c-with-onblendout-oninterrupted-etc/447184/7
-
-	//UPlayMontageCallbackProxy* PlayMontageCallbackProxy = UPlayMontageCallbackProxy::CreateProxyObjectForPlayMontage();
-	//PlayMontageCallbackProxy->OnCompleted.AddDynamic();
 
 	if (Character)
 		Character->GetMesh()->GetAnimInstance()->OnMontageEnded.AddDynamic(this, &USTUWeaponComponent::OnMontageEnded);
+
+	// https://forums.unrealengine.com/t/play-montage-in-c-with-onblendout-oninterrupted-etc/447184/7
+	//UPlayMontageCallbackProxy* PlayMontageCallbackProxy = UPlayMontageCallbackProxy::CreateProxyObjectForPlayMontage();
+	//PlayMontageCallbackProxy->OnCompleted.AddDynamic();
 
 	if (EquipAnimMontage)
 	{
@@ -141,7 +144,8 @@ void USTUWeaponComponent::SpawnWeapons()
 			{
 				Weapons.Add({ Weapon, WeaponDataIterator.ReloadAnimMontage });
 				Weapon->SetOwner(Character);
-				Weapon->OnEmptyClip.AddDynamic(this, &USTUWeaponComponent::Reload);
+				if (bAutoReload)
+					Weapon->OnEmptyClip.AddDynamic(this, &USTUWeaponComponent::Reload);
 				AttachToSocket(Weapon, Character->GetMesh(), WeaponArmorySocket);
 			}
 		}
@@ -157,15 +161,14 @@ void USTUWeaponComponent::EquipWeapon(int32 Index)
 
 	if (Character)
 	{
-		if (CurrentWeapon)
+		if (CurrentWeapon.Weapon)
 		{
-			CurrentWeapon->StopFire();
-			AttachToSocket(CurrentWeapon, Character->GetMesh(), WeaponArmorySocket);
+			CurrentWeapon.Weapon->StopFire();
+			AttachToSocket(CurrentWeapon.Weapon, Character->GetMesh(), WeaponArmorySocket);
 		}
 
-		CurrentWeapon = Weapons[Index].Weapon;
-		CurrentReloadAnimMontage = Weapons[Index].ReloadAnimMontage;
-		AttachToSocket(CurrentWeapon, Character->GetMesh(), WeaponEquipSocket);
+		CurrentWeapon = Weapons[Index];
+		AttachToSocket(CurrentWeapon.Weapon, Character->GetMesh(), WeaponEquipSocket);
 
 		PlayAnimMontage(EquipAnimMontage);
 		bEquipAnimInProgress = true;
@@ -176,7 +179,6 @@ void USTUWeaponComponent::AttachToSocket(ASTUBaseWeapon* Weapon, USceneComponent
 {
 	FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, false);
 	Weapon->AttachToComponent(Component, AttachmentRules, SocketName);
-
 }
 
 void USTUWeaponComponent::PlayAnimMontage(UAnimMontage* AnimMontage)
@@ -211,7 +213,12 @@ void USTUWeaponComponent::OnMontageEnded(UAnimMontage* Montage, bool bInterrupte
 {
 	if (bInterrupted)
 	{
-		bEquipAnimInProgress = false;
-		bReloadAnimInProgress = false;
+		ACharacter* Character = Cast<ACharacter>(GetOwner());
+
+		if (Character)
+		{
+			OnEquipFinished(Character->GetMesh());
+			OnReloadFinished(Character->GetMesh());
+		}
 	}
 }
