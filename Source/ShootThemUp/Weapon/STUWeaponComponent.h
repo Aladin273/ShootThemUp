@@ -94,6 +94,9 @@ private:
 	void OnReloadFinished(USkeletalMeshComponent* MeshComp);
 	bool bReloadAnimInProgress = false;
 
+	UFUNCTION()
+	void OnMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+
 	UPROPERTY()
 	TArray<FWeaponDataInternal> Weapons;
 

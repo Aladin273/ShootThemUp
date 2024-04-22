@@ -5,6 +5,8 @@
 #include "STUBaseWeapon.h"
 #include "GameFramework/Character.h"
 
+#include "PlayMontageCallbackProxy.h"
+
 #include "../Animations/STUEquipFinishedAnimNotify.h"
 #include "../Animations/STUReloadFinishedAnimNotify.h"
 
@@ -95,6 +97,16 @@ bool USTUWeaponComponent::CanReload() const
 
 void USTUWeaponComponent::InitAnimations()
 {
+	ACharacter* Character = Cast<ACharacter>(GetOwner());
+	
+	// https://forums.unrealengine.com/t/play-montage-in-c-with-onblendout-oninterrupted-etc/447184/7
+
+	//UPlayMontageCallbackProxy* PlayMontageCallbackProxy = UPlayMontageCallbackProxy::CreateProxyObjectForPlayMontage();
+	//PlayMontageCallbackProxy->OnCompleted.AddDynamic();
+
+	if (Character)
+		Character->GetMesh()->GetAnimInstance()->OnMontageEnded.AddDynamic(this, &USTUWeaponComponent::OnMontageEnded);
+
 	if (EquipAnimMontage)
 	{
 		USTUEquipFinishedAnimNotify* EquipFinishedNotify = FindNotifyByClass<USTUEquipFinishedAnimNotify>(EquipAnimMontage);
@@ -191,6 +203,15 @@ void USTUWeaponComponent::OnReloadFinished(USkeletalMeshComponent* MeshComp)
 
 	if (Character && Character->GetMesh() == MeshComp)
 	{
+		bReloadAnimInProgress = false;
+	}
+}
+
+void USTUWeaponComponent::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	if (bInterrupted)
+	{
+		bEquipAnimInProgress = false;
 		bReloadAnimInProgress = false;
 	}
 }
