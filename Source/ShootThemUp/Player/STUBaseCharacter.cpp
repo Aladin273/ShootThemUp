@@ -25,6 +25,9 @@ ASTUBaseCharacter::ASTUBaseCharacter(const FObjectInitializer& ObjInit)
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>("CameraComponent");
 	CameraComponent->SetupAttachment(SpringArmComponent);
 
+	CameraComponentFP = CreateDefaultSubobject<UCameraComponent>("CameraComponentFP");
+	CameraComponentFP->SetupAttachment(GetMesh(), "HeadSocket");
+
 	HealthTextComponent = CreateDefaultSubobject<UTextRenderComponent>("HealthTextComponent");
 	HealthTextComponent->SetupAttachment(GetRootComponent());
 
@@ -37,6 +40,9 @@ ASTUBaseCharacter::ASTUBaseCharacter(const FObjectInitializer& ObjInit)
 void ASTUBaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	CameraComponent->SetActive(true);
+	CameraComponentFP->SetActive(false);
 
 	OnHealthChanged(HealthComponent->GetHealth(), HealthComponent->MaxHealth);
 
@@ -71,6 +77,8 @@ void ASTUBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 	PlayerInputComponent->BindAction("NextWeapon", IE_Pressed, WeaponComponent, &USTUWeaponComponent::NextWeapon);
 	PlayerInputComponent->BindAction("Reload", IE_Pressed, WeaponComponent, &USTUWeaponComponent::Reload);
+
+	PlayerInputComponent->BindAction("ToggleView", IE_Pressed, this, &ASTUBaseCharacter::ToggleView);
 }
 
 FVector ASTUBaseCharacter::GetInputVelocity() const
@@ -196,4 +204,19 @@ void ASTUBaseCharacter::StartFire()
 void ASTUBaseCharacter::StopFire()
 {
 	WeaponComponent->StopFire();
+}
+
+void ASTUBaseCharacter::ToggleView()
+{
+	CameraComponent->ToggleActive();
+	CameraComponentFP->ToggleActive();
+
+	if (CameraComponentFP->IsActive()) 
+	{
+		GetMesh()->HideBoneByName("b_head", EPhysBodyOp::PBO_None);
+	}
+	else
+	{
+		GetMesh()->UnHideBoneByName("b_head");
+	}
 }

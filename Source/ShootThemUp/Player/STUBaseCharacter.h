@@ -28,6 +28,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	UCameraComponent* CameraComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+	UCameraComponent* CameraComponentFP;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	UTextRenderComponent* HealthTextComponent;
@@ -99,6 +102,8 @@ private:
 	void StartFire();
     void StopFire();
 	
+	void ToggleView();
+
 	FVector InputVelocity = FVector::ZeroVector;
 	USTUCharacterMovementComponent* CharacterMovementComponent = nullptr;
 };
