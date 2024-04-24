@@ -63,7 +63,7 @@ protected:
 	UAnimMontage* EquipAnimMontage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
-	bool bAutoReload = true;
+	bool bAutoReload = false;
 
 protected:
 	// Called when the game starts

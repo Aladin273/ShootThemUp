@@ -81,11 +81,11 @@ void ASTUBaseWeapon::DecreaseAmmo()
 		CurrentAmmo.Bullets--;
 		LogAmmo();
 
-		if (IsClipEmpty() && !IsAmmoEmpty())
-		{
-			StopFire();
-			OnEmptyClip.Broadcast();
-		}
+        if (IsClipEmpty() && !IsAmmoEmpty())
+        {
+            StopFire();
+            OnEmptyClip.Broadcast();
+        }
 	}
 }
 
@@ -113,9 +113,9 @@ void ASTUBaseWeapon::MakeShot()
 {
 	FVector TraceStart, TraceEnd;
 
-	if (IsAmmoEmpty() || !GetTraceData(TraceStart, TraceEnd))
+	if (IsClipEmpty() || !GetTraceData(TraceStart, TraceEnd))
 	{
-		StopFire();
+		StopFire();		
 		return;
 	}
 

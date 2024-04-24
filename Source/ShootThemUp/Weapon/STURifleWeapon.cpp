@@ -69,7 +69,7 @@ void ASTURifleWeapon::MakeShot()
 {
 	FVector TraceStart, TraceEnd;
 	
-	if (IsAmmoEmpty() || !GetTraceData(TraceStart, TraceEnd))
+	if (IsClipEmpty() || !GetTraceData(TraceStart, TraceEnd))
 	{
 		StopFire();
 		return;

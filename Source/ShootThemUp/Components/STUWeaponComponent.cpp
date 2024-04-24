@@ -37,6 +37,12 @@ void USTUWeaponComponent::NextWeapon()
 {
 	if (CanEquip())
 	{
+		PlayAnimMontage(EquipAnimMontage);
+		bEquipAnimInProgress = true;
+		
+		if (CurrentWeapon.Weapon)
+			CurrentWeapon.Weapon->StopFire();
+
 		CurrentWeaponIndex = (CurrentWeaponIndex + 1) % Weapons.Num();
 		EquipWeapon(CurrentWeaponIndex);
 	}
@@ -48,9 +54,9 @@ void USTUWeaponComponent::Reload()
 	{
 		PlayAnimMontage(CurrentWeapon.ReloadAnimMontage);
 		bReloadAnimInProgress = true;
-
-		CurrentWeapon.Weapon->StopFire();
-		CurrentWeapon.Weapon->Reload();
+		
+		if (CurrentWeapon.Weapon)
+			CurrentWeapon.Weapon->StopFire();
 	}
 }
 
@@ -102,7 +108,7 @@ bool USTUWeaponComponent::CanFire() const
 
 bool USTUWeaponComponent::CanEquip() const
 {
-	return !bEquipAnimInProgress && !bReloadAnimInProgress;
+	return !bEquipAnimInProgress;
 }
 
 bool USTUWeaponComponent::CanReload() const
@@ -173,16 +179,10 @@ void USTUWeaponComponent::EquipWeapon(int32 Index)
 	if (Character)
 	{
 		if (CurrentWeapon.Weapon)
-		{
-			CurrentWeapon.Weapon->StopFire();
 			AttachToSocket(CurrentWeapon.Weapon, Character->GetMesh(), WeaponArmorySocket);
-		}
 
 		CurrentWeapon = Weapons[Index];
 		AttachToSocket(CurrentWeapon.Weapon, Character->GetMesh(), WeaponEquipSocket);
-
-		PlayAnimMontage(EquipAnimMontage);
-		bEquipAnimInProgress = true;
 	}
 }
 
@@ -217,6 +217,7 @@ void USTUWeaponComponent::OnReloadFinished(USkeletalMeshComponent* MeshComp)
 	if (Character && Character->GetMesh() == MeshComp)
 	{
 		bReloadAnimInProgress = false;
+		CurrentWeapon.Weapon->Reload();
 	}
 }
 
