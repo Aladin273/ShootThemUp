@@ -26,6 +26,18 @@ struct FAmmoData
 	bool bInfinite = false;
 };
 
+USTRUCT(BlueprintType)
+struct FWeaponUIData
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon") 
+	UTexture2D* MainIcon;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon", meta = (EditCondition = "!bInfinite"))
+	UTexture2D* CrossHairIcon;
+};
+
 UCLASS(Blueprintable)
 class SHOOTTHEMUP_API ASTUBaseWeapon : public AActor
 {
@@ -43,6 +55,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon") 
 	FAmmoData DefaultAmmo;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon") 
+	FWeaponUIData UIData;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon") 
 	float TraceMaxDistance = 10000.f;
@@ -69,6 +84,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	bool CanReload() const;
+
+	UFUNCTION(BlueprintCallable)
+	FWeaponUIData GetUIData() const;
+
+	UFUNCTION(BlueprintCallable)
+	FAmmoData GetAmmoData() const;
 
 	UPROPERTY(BlueprintAssignable, BlueprintCallable)
 	FOnEmptyClipSignature OnEmptyClip;

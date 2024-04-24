@@ -64,6 +64,16 @@ bool ASTUBaseWeapon::CanReload() const
 	return CurrentAmmo.Bullets < DefaultAmmo.Bullets && (CurrentAmmo.Clips > 0 || CurrentAmmo.bInfinite);
 }
 
+FWeaponUIData ASTUBaseWeapon::GetUIData() const
+{
+	return UIData;
+}
+
+FAmmoData ASTUBaseWeapon::GetAmmoData() const
+{
+	return CurrentAmmo;
+}
+
 void ASTUBaseWeapon::DecreaseAmmo()
 {
 	if (CurrentAmmo.Bullets > 0)

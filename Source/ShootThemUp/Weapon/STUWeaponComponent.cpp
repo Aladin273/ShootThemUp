@@ -84,6 +84,16 @@ void USTUWeaponComponent::Reload()
 	}
 }
 
+FWeaponUIData USTUWeaponComponent::GetUIData() const
+{
+	return CurrentWeapon.Weapon ? CurrentWeapon.Weapon->GetUIData() : FWeaponUIData{};
+}
+
+FAmmoData USTUWeaponComponent::GetAmmoData() const
+{
+	return CurrentWeapon.Weapon ? CurrentWeapon.Weapon->GetAmmoData() : FAmmoData{};
+}
+
 bool USTUWeaponComponent::CanFire() const
 {
 	return CurrentWeapon.Weapon && !bEquipAnimInProgress && !bReloadAnimInProgress;

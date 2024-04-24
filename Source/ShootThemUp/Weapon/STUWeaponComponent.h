@@ -4,10 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "STUBaseWeapon.h"
 #include "STUWeaponComponent.generated.h"
-
-class ASTUBaseWeapon;
-struct FWeaponDataInternal;
 
 USTRUCT(BlueprintType)
 struct FWeaponData
@@ -70,6 +68,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void Reload();
+
+	UFUNCTION(BlueprintCallable)
+	FWeaponUIData GetUIData() const;
+
+	UFUNCTION(BlueprintCallable)
+	FAmmoData GetAmmoData() const;
 
 private:
 	bool CanFire() const;
