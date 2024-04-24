@@ -49,6 +49,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FWeaponAmmoData GetAmmoData() const;
 
+	UFUNCTION(BlueprintCallable)
+	bool TryToAddAmmo(TSubclassOf<ASTUBaseWeapon> WeaponClass, int32 Bullets);
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	TArray<FWeaponData> WeaponData;
@@ -63,7 +66,7 @@ protected:
 	UAnimMontage* EquipAnimMontage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
-	bool bAutoReload = false;
+	bool bAutoReload = true;
 
 protected:
 	// Called when the game starts
@@ -97,6 +100,9 @@ private:
 
 	UFUNCTION()
 	void OnMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+
+	UFUNCTION()
+	void OnReload(ASTUBaseWeapon* Weapon);
 
 	struct FWeaponDataInternal
 	{

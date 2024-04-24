@@ -70,6 +70,19 @@ FWeaponAmmoData USTUWeaponComponent::GetAmmoData() const
 	return CurrentWeapon.Weapon ? CurrentWeapon.Weapon->GetAmmoData() : FWeaponAmmoData{};
 }
 
+bool USTUWeaponComponent::TryToAddAmmo(TSubclassOf<ASTUBaseWeapon> WeaponClass, int32 Bullets)
+{
+	for (FWeaponDataInternal& Weapon : Weapons)
+	{
+		if (Weapon.Weapon->IsA(WeaponClass))
+		{
+			return Weapon.Weapon->TryToAddAmmo(Bullets);
+		}
+	}
+
+	return false;
+}
+
 void USTUWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -162,7 +175,7 @@ void USTUWeaponComponent::SpawnWeapons()
 				Weapons.Add({ Weapon, WeaponDataIterator.ReloadAnimMontage });
 				Weapon->SetOwner(Character);
 				if (bAutoReload)
-					Weapon->OnEmptyClip.AddDynamic(this, &USTUWeaponComponent::Reload);
+					Weapon->OnEmptyClip.AddDynamic(this, &USTUWeaponComponent::OnReload);
 				AttachToSocket(Weapon, Character->GetMesh(), WeaponArmorySocket);
 			}
 		}
@@ -233,4 +246,10 @@ void USTUWeaponComponent::OnMontageEnded(UAnimMontage* Montage, bool bInterrupte
 			bReloadAnimInProgress = false;
 		}
 	}
+}
+
+void USTUWeaponComponent::OnReload(ASTUBaseWeapon* Weapon)
+{
+	if (Weapon == CurrentWeapon.Weapon)
+		Reload();
 }

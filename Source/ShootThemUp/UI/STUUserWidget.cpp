@@ -6,11 +6,7 @@
 #include "../Components/STUHealthComponent.h"
 #include "../Components/STUWeaponComponent.h"
 
-template <typename T>
-static T* GetSTUPlayerComponent(APawn* PlayerPawn)
-{
-    return PlayerPawn ? Cast<T>(PlayerPawn->GetComponentByClass(T::StaticClass())) : nullptr;
-}
+#include "../STUUtils.h"
 
 float USTUUserWidget::GetHealthPercent() const
 {

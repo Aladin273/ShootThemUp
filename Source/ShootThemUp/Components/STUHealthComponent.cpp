@@ -33,6 +33,17 @@ bool USTUHealthComponent::IsDead() const
 	return Health <= 0.f;
 }
 
+bool USTUHealthComponent::TryToAddHealth(float HealthAmount)
+{
+	if (!IsDead() && Health < MaxHealth)
+	{
+		Health = FMath::Clamp(Health + HealthAmount, 0.f, MaxHealth);
+		return true;
+	}
+
+	return false;
+}
+
 void USTUHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();

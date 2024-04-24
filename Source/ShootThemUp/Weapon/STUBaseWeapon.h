@@ -9,7 +9,7 @@
 class APlayerController;
 class USkeletalMeshComponent;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEmptyClipSignature); // C++ & BP
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEmptyClipSignature, ASTUBaseWeapon*, Weapon); // C++ & BP
 
 USTRUCT(BlueprintType)
 struct FWeaponUIData
@@ -32,7 +32,7 @@ struct FWeaponAmmoData
 	int32 Bullets = 30;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon", meta = (EditCondition = "!bInfinite"))
-	int32 Clips = 3;
+	int32 Stock = 90;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon") 
 	bool bInfinite = false;
@@ -69,6 +69,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FWeaponAmmoData GetAmmoData() const;
 
+	UFUNCTION(BlueprintCallable)
+	bool TryToAddAmmo(int32 Bullets);
+
 public:
 	UPROPERTY(BlueprintAssignable, BlueprintCallable)
 	FOnEmptyClipSignature OnEmptyClip;
@@ -98,6 +101,7 @@ protected:
 
 protected:
 	void DecreaseAmmo();
+	bool IsAmmoFull() const;
 	bool IsAmmoEmpty() const;
 	bool IsClipEmpty() const;
 	void LogAmmo();

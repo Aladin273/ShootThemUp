@@ -71,6 +71,9 @@ void ASTURifleWeapon::MakeShot()
 	
 	if (IsClipEmpty() || !GetTraceData(TraceStart, TraceEnd))
 	{
+		if (!IsAmmoEmpty())
+			OnEmptyClip.Broadcast(this);
+
 		StopFire();
 		return;
 	}

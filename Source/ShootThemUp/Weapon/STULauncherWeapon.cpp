@@ -36,6 +36,9 @@ void ASTULauncherWeapon::MakeShot()
 
 	if (IsClipEmpty() || !GetTraceData(TraceStart, TraceEnd))
 	{
+		if (!IsAmmoEmpty())
+			OnEmptyClip.Broadcast(this);
+
 		StopFire();
 		return;
 	}

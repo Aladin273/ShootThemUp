@@ -33,6 +33,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool IsDead() const;
 
+	UFUNCTION(BlueprintCallable)
+	bool TryToAddHealth(float HealthAmount);
+
 public:
 	UPROPERTY(BlueprintAssignable, BlueprintCallable)
 	FOnDeath OnDeath;
