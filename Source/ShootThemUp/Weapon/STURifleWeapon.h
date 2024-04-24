@@ -16,6 +16,12 @@ public:
 	// Sets default values for this component's properties
 	ASTURifleWeapon();
 
+public:
+	virtual void StartFire() override;
+	virtual void StopFire() override;
+	virtual bool IsFiring() const override;
+
+protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon") 
 	float DamageAmount = 26.f;
 
@@ -37,11 +43,6 @@ protected:
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-public:
-	virtual void StartFire() override;
-	virtual void StopFire() override;
-	virtual bool IsFiring() const override;
 
 protected:
 	virtual void MakeShot() override;

@@ -7,10 +7,9 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/TextRenderComponent.h"
 
-#include "STUCharacterMovementComponent.h"
-#include "STUHealthComponent.h"
-
-#include "../Weapon/STUWeaponComponent.h"
+#include "../Components/STUCharacterMovementComponent.h"
+#include "../Components/STUHealthComponent.h"
+#include "../Components/STUWeaponComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogBaseCharacter, All, All)
 
@@ -28,13 +27,20 @@ ASTUBaseCharacter::ASTUBaseCharacter(const FObjectInitializer& ObjInit)
 	CameraComponentFP = CreateDefaultSubobject<UCameraComponent>("CameraComponentFP");
 	CameraComponentFP->SetupAttachment(GetMesh(), "HeadSocket");
 
-	HealthTextComponent = CreateDefaultSubobject<UTextRenderComponent>("HealthTextComponent");
-	HealthTextComponent->SetupAttachment(GetRootComponent());
-
 	HealthComponent = CreateDefaultSubobject<USTUHealthComponent>("HealthComponent");
 	WeaponComponent = CreateDefaultSubobject<USTUWeaponComponent>("WeaponComponent");
 
 	CharacterMovementComponent = Cast<USTUCharacterMovementComponent>(GetCharacterMovement());
+}
+
+FVector ASTUBaseCharacter::GetInputVelocity() const
+{
+	return InputVelocity;
+}
+
+FVector ASTUBaseCharacter::GetRelativeVelocity() const
+{
+	return GetActorRotation().UnrotateVector(GetVelocity());
 }
 
 void ASTUBaseCharacter::BeginPlay()
@@ -44,7 +50,7 @@ void ASTUBaseCharacter::BeginPlay()
 	CameraComponent->SetActive(true);
 	CameraComponentFP->SetActive(false);
 
-	OnHealthChanged(HealthComponent->GetHealth(), HealthComponent->MaxHealth);
+	OnHealthChanged(HealthComponent->GetHealth(), HealthComponent->GetMaxHealth());
 
 	HealthComponent->OnDeath.AddDynamic(this, &ASTUBaseCharacter::OnDeath);
 	HealthComponent->OnHealthChanged.AddDynamic(this, &ASTUBaseCharacter::OnHealthChanged);
@@ -81,21 +87,8 @@ void ASTUBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAction("ToggleView", IE_Pressed, this, &ASTUBaseCharacter::ToggleView);
 }
 
-FVector ASTUBaseCharacter::GetInputVelocity() const
-{
-	return InputVelocity;
-}
-
-FVector ASTUBaseCharacter::GetRelativeVelocity() const
-{
-	return GetActorRotation().UnrotateVector(GetVelocity());
-}
-
 void ASTUBaseCharacter::OnDeath()
 {
-	HealthTextComponent->SetText(FText::FromString("Dead"));
-	HealthTextComponent->SetTextRenderColor(FColor::Red);
-
 	PlayAnimMontage(DeathAnimMontage);
 	GetMesh()->SetSimulatePhysics(true);
 	GetMesh()->SetCollisionProfileName("BlockAll");
@@ -113,16 +106,7 @@ void ASTUBaseCharacter::OnDeath()
 
 void ASTUBaseCharacter::OnHealthChanged(float Health, float MaxHealth)
 {
-	HealthTextComponent->SetText(FText::FromString(FString::Printf(TEXT("%.0f"), Health)));
-
-	if (Health >= MaxHealth / 2)
-		HealthTextComponent->SetTextRenderColor(FColor::Green);
-	else if (Health >= MaxHealth / 4)
-		HealthTextComponent->SetTextRenderColor(FColor::Yellow);
-	else
-		HealthTextComponent->SetTextRenderColor(FColor::Orange);
-
-	UE_LOG(LogBaseCharacter, Display, TEXT("Health Changed : %.2f"), Health);
+	UE_LOG(LogBaseCharacter, Display, TEXT("Health Changed : %.2f / %.2f"), Health, MaxHealth);
 }
 
 void ASTUBaseCharacter::OnLand(const FHitResult& Hit)

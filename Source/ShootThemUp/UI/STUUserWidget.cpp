@@ -3,71 +3,37 @@
 
 #include "STUUserWidget.h"
 
-#include "../Player/STUHealthComponent.h"
-#include "../Weapon/STUWeaponComponent.h"
+#include "../Components/STUHealthComponent.h"
+#include "../Components/STUWeaponComponent.h"
+
+template <typename T>
+static T* GetSTUPlayerComponent(APawn* PlayerPawn)
+{
+    return PlayerPawn ? Cast<T>(PlayerPawn->GetComponentByClass(T::StaticClass())) : nullptr;
+}
 
 float USTUUserWidget::GetHealthPercent() const
 {
-    const APawn* Player = GetOwningPlayerPawn();
-
-    if (Player)
-    {
-        const auto Component = Player->GetComponentByClass(USTUHealthComponent::StaticClass());
-        const auto HealthComponent = Cast<USTUHealthComponent>(Component);
-
-        if (HealthComponent)
-            return HealthComponent->GetHealthPercent();
-    }
-
-    return 0.0f;
+    const auto HealthComponent = GetSTUPlayerComponent<USTUHealthComponent>(GetOwningPlayerPawn());
+    return HealthComponent ? HealthComponent->GetHealthPercent() : 0.f;
 }
 
 FWeaponUIData USTUUserWidget::GetWeaponUIData() const
 {
-    const APawn* Player = GetOwningPlayerPawn();
-
-    if (Player)
-    {
-        const auto Component = Player->GetComponentByClass(USTUWeaponComponent::StaticClass());
-        const auto WeaponComponent = Cast<USTUWeaponComponent>(Component);
-
-        if (WeaponComponent)
-            return WeaponComponent->GetUIData();
-    }
-
-    return {};
+    const auto WeaponComponent = GetSTUPlayerComponent<USTUWeaponComponent>(GetOwningPlayerPawn());
+    return WeaponComponent ? WeaponComponent->GetUIData() : FWeaponUIData{};
 }
 
-FAmmoData USTUUserWidget::GetWeaponAmmoData() const
+FWeaponAmmoData USTUUserWidget::GetWeaponAmmoData() const
 {
-    const APawn* Player = GetOwningPlayerPawn();
-
-    if (Player)
-    {
-        const auto Component = Player->GetComponentByClass(USTUWeaponComponent::StaticClass());
-        const auto WeaponComponent = Cast<USTUWeaponComponent>(Component);
-
-        if (WeaponComponent)
-            return WeaponComponent->GetAmmoData();
-    }
-
-    return {};
+    const auto WeaponComponent = GetSTUPlayerComponent<USTUWeaponComponent>(GetOwningPlayerPawn());
+    return WeaponComponent ? WeaponComponent->GetAmmoData() : FWeaponAmmoData{};
 }
 
 bool USTUUserWidget::IsPlayerAlive() const
 {
-    const APawn* Player = GetOwningPlayerPawn();
-
-    if (Player)
-    {
-        const auto Component = Player->GetComponentByClass(USTUHealthComponent::StaticClass());
-        const auto HealthComponent = Cast<USTUHealthComponent>(Component);
-
-        if (HealthComponent)
-            return !HealthComponent->IsDead();
-    }
-
-    return false;
+    const auto HealthComponent = GetSTUPlayerComponent<USTUHealthComponent>(GetOwningPlayerPawn());
+    return HealthComponent ? !HealthComponent->IsDead() : false;
 }
 
 bool USTUUserWidget::IsPlayerSpectating() const

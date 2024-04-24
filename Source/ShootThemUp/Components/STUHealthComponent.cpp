@@ -23,6 +23,11 @@ float USTUHealthComponent::GetHealthPercent() const
 	return Health / MaxHealth;
 }
 
+float USTUHealthComponent::GetMaxHealth() const
+{
+	return MaxHealth;
+}
+
 bool USTUHealthComponent::IsDead() const
 {
 	return Health <= 0.f;

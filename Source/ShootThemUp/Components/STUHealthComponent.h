@@ -28,9 +28,19 @@ public:
 	float GetHealthPercent() const;
 
 	UFUNCTION(BlueprintCallable)
+	float GetMaxHealth() const;
+
+	UFUNCTION(BlueprintCallable)
 	bool IsDead() const;
 
 public:
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
+	FOnDeath OnDeath;
+
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
+	FOnHealthChanged OnHealthChanged;
+
+protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0", UIMin = "0"))
 	float MaxHealth = 100.f;
 	
@@ -45,13 +55,6 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = "AutoHeal"))
 	float HealModifier = 1.f;
-
-public:
-	UPROPERTY(BlueprintAssignable, BlueprintCallable)
-	FOnDeath OnDeath;
-
-	UPROPERTY(BlueprintAssignable, BlueprintCallable)
-	FOnHealthChanged OnHealthChanged;
 
 protected:
 	// Called when the game starts

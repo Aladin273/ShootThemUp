@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "STUBaseWeapon.h"
+#include "../Weapon/STUBaseWeapon.h"
 #include "STUWeaponComponent.generated.h"
 
 USTRUCT(BlueprintType)
@@ -28,6 +28,28 @@ public:
 	// Sets default values for this component's properties
 	USTUWeaponComponent();
 
+	UFUNCTION(BlueprintCallable)
+	void StartFire();
+
+	UFUNCTION(BlueprintCallable)
+	void StopFire();
+
+	UFUNCTION(BlueprintCallable)
+	bool IsFiring() const;
+
+	UFUNCTION(BlueprintCallable)
+	void NextWeapon();
+
+	UFUNCTION(BlueprintCallable)
+	void Reload();
+
+	UFUNCTION(BlueprintCallable)
+	FWeaponUIData GetUIData() const;
+
+	UFUNCTION(BlueprintCallable)
+	FWeaponAmmoData GetAmmoData() const;
+
+protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	TArray<FWeaponData> WeaponData;
 	
@@ -52,28 +74,6 @@ protected:
 
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-public:
-	UFUNCTION(BlueprintCallable)
-	void StartFire();
-
-	UFUNCTION(BlueprintCallable)
-	void StopFire();
-
-	UFUNCTION(BlueprintCallable)
-	bool IsFiring() const;
-
-	UFUNCTION(BlueprintCallable)
-	void NextWeapon();
-
-	UFUNCTION(BlueprintCallable)
-	void Reload();
-
-	UFUNCTION(BlueprintCallable)
-	FWeaponUIData GetUIData() const;
-
-	UFUNCTION(BlueprintCallable)
-	FAmmoData GetAmmoData() const;
 
 private:
 	bool CanFire() const;

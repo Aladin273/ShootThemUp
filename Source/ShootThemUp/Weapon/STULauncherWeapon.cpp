@@ -9,15 +9,6 @@ ASTULauncherWeapon::ASTULauncherWeapon()
 	PrimaryActorTick.bCanEverTick = false;
 
 }
-void ASTULauncherWeapon::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
-void ASTULauncherWeapon::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
 
 void ASTULauncherWeapon::StartFire()
 {
@@ -27,6 +18,16 @@ void ASTULauncherWeapon::StartFire()
 void ASTULauncherWeapon::StopFire()
 {
 	// Possible Override
+}
+
+void ASTULauncherWeapon::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
+void ASTULauncherWeapon::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
 }
 
 void ASTULauncherWeapon::MakeShot()

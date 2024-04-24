@@ -2,8 +2,9 @@
 
 #include "STUWeaponComponent.h"
 
-#include "STUBaseWeapon.h"
 #include "GameFramework/Character.h"
+
+#include "../Weapon/STUBaseWeapon.h"
 
 #include "../Animations/STUEquipFinishedAnimNotify.h"
 #include "../Animations/STUReloadFinishedAnimNotify.h"
@@ -13,37 +14,6 @@ DEFINE_LOG_CATEGORY_STATIC(LogWeaponComponent, All, All)
 USTUWeaponComponent::USTUWeaponComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
-}
-
-void USTUWeaponComponent::BeginPlay()
-{
-	Super::BeginPlay();
-
-	InitAnimations();
-
-	SpawnWeapons();
-	EquipWeapon(CurrentWeaponIndex);
-}
-
-void USTUWeaponComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
-	CurrentWeapon.Weapon = nullptr;
-	CurrentWeapon.ReloadAnimMontage = nullptr;
-
-	for (auto Weapon : Weapons)
-	{
-		Weapon.Weapon->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-		Weapon.Weapon->Destroy();
-	}
-
-	Weapons.Empty();
-
-	Super::EndPlay(EndPlayReason);
-}
-
-void USTUWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
 void USTUWeaponComponent::StartFire()
@@ -78,7 +48,7 @@ void USTUWeaponComponent::Reload()
 	{
 		PlayAnimMontage(CurrentWeapon.ReloadAnimMontage);
 		bReloadAnimInProgress = true;
-		
+
 		CurrentWeapon.Weapon->StopFire();
 		CurrentWeapon.Weapon->Reload();
 	}
@@ -89,9 +59,40 @@ FWeaponUIData USTUWeaponComponent::GetUIData() const
 	return CurrentWeapon.Weapon ? CurrentWeapon.Weapon->GetUIData() : FWeaponUIData{};
 }
 
-FAmmoData USTUWeaponComponent::GetAmmoData() const
+FWeaponAmmoData USTUWeaponComponent::GetAmmoData() const
 {
-	return CurrentWeapon.Weapon ? CurrentWeapon.Weapon->GetAmmoData() : FAmmoData{};
+	return CurrentWeapon.Weapon ? CurrentWeapon.Weapon->GetAmmoData() : FWeaponAmmoData{};
+}
+
+void USTUWeaponComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	InitAnimations();
+
+	SpawnWeapons();
+	EquipWeapon(CurrentWeaponIndex);
+}
+
+void USTUWeaponComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	CurrentWeapon.Weapon = nullptr;
+	CurrentWeapon.ReloadAnimMontage = nullptr;
+
+	for (auto Weapon : Weapons)
+	{
+		Weapon.Weapon->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+		Weapon.Weapon->Destroy();
+	}
+
+	Weapons.Empty();
+
+	Super::EndPlay(EndPlayReason);
+}
+
+void USTUWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
 bool USTUWeaponComponent::CanFire() const
@@ -227,8 +228,8 @@ void USTUWeaponComponent::OnMontageEnded(UAnimMontage* Montage, bool bInterrupte
 
 		if (Character)
 		{
-			OnEquipFinished(Character->GetMesh());
-			OnReloadFinished(Character->GetMesh());
+			bEquipAnimInProgress = false;
+			bReloadAnimInProgress = false;
 		}
 	}
 }

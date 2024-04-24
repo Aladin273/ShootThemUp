@@ -2,7 +2,7 @@
 
 
 #include "STUCharacterMovementComponent.h"
-#include "STUBaseCharacter.h"
+#include "../Player/STUBaseCharacter.h"
 
 float USTUCharacterMovementComponent::GetMaxSpeed() const
 {
@@ -13,15 +13,15 @@ float USTUCharacterMovementComponent::GetMaxSpeed() const
 bool USTUCharacterMovementComponent::IsRunning() const
 {
     ASTUBaseCharacter* Character = Cast<ASTUBaseCharacter>(GetPawnOwner());
-    return WantsToRun && Character->GetInputVelocity().X > 0 && !Character->GetVelocity().IsZero() && !IsFalling();
+    return bWantsToRun && Character->GetInputVelocity().X > 0 && !Character->GetVelocity().IsZero() && !IsFalling();
 }
 
 void USTUCharacterMovementComponent::StartRunning()
 {
-    WantsToRun = true;
+    bWantsToRun = true;
 }
 
 void USTUCharacterMovementComponent::StopRunning()
 {
-    WantsToRun = false;
+    bWantsToRun = false;
 }

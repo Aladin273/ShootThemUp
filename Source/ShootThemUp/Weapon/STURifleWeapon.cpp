@@ -8,6 +8,22 @@ ASTURifleWeapon::ASTURifleWeapon()
 	PrimaryActorTick.bCanEverTick = true;
 
 }
+
+void ASTURifleWeapon::StartFire()
+{
+	bWantsToFire = true;
+}
+
+void ASTURifleWeapon::StopFire()
+{
+	bWantsToFire = false;
+}
+
+bool ASTURifleWeapon::IsFiring() const
+{
+	return bWantsToFire;
+}
+
 void ASTURifleWeapon::BeginPlay()
 {
 	Super::BeginPlay();
@@ -47,21 +63,6 @@ void ASTURifleWeapon::Tick(float DeltaTime)
 		bWantsToRecoil = false;
 		LastRecoilElapsed = 0.f;
 	}
-}
-
-void ASTURifleWeapon::StartFire()
-{
-	bWantsToFire = true;
-}
-
-void ASTURifleWeapon::StopFire()
-{
-	bWantsToFire = false;
-}
-
-bool ASTURifleWeapon::IsFiring() const
-{
-	return bWantsToFire;
 }
 
 void ASTURifleWeapon::MakeShot()

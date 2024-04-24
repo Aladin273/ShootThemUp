@@ -18,6 +18,10 @@ public:
 	// Sets default values for this component's properties
 	ASTULauncherWeapon();
 
+	virtual void StartFire() override;
+	virtual void StopFire() override;
+
+protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	TSubclassOf<ASTUProjectile> ProjectileClass;
 
@@ -27,10 +31,6 @@ protected:
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-public:
-	virtual void StartFire() override;
-	virtual void StopFire() override;
 
 protected:
 	virtual void MakeShot() override;

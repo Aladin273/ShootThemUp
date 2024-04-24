@@ -18,6 +18,9 @@ public:
 	// Sets default values for this actor's properties
 	ASTUProjectile();
 
+	virtual void SetShotDirection(const FVector& Direction) { ShotDirection = Direction; };
+
+protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	USphereComponent* CollisionComponent;
 
@@ -42,9 +45,6 @@ protected:
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-public:	
-	virtual void SetShotDirection(const FVector& Direction) { ShotDirection = Direction; };
 
 protected:
 	UFUNCTION()

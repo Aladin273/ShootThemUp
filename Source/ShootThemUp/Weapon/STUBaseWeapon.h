@@ -12,7 +12,19 @@ class USkeletalMeshComponent;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEmptyClipSignature); // C++ & BP
 
 USTRUCT(BlueprintType)
-struct FAmmoData
+struct FWeaponUIData
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon") 
+	UTexture2D* MainIcon;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon", meta = (EditCondition = "!bInfinite"))
+	UTexture2D* CrossHairIcon;
+};
+
+USTRUCT(BlueprintType)
+struct FWeaponAmmoData
 {
 	GENERATED_USTRUCT_BODY()
 
@@ -26,18 +38,6 @@ struct FAmmoData
 	bool bInfinite = false;
 };
 
-USTRUCT(BlueprintType)
-struct FWeaponUIData
-{
-	GENERATED_USTRUCT_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon") 
-	UTexture2D* MainIcon;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon", meta = (EditCondition = "!bInfinite"))
-	UTexture2D* CrossHairIcon;
-};
-
 UCLASS(Blueprintable)
 class SHOOTTHEMUP_API ASTUBaseWeapon : public AActor
 {
@@ -46,28 +46,6 @@ class SHOOTTHEMUP_API ASTUBaseWeapon : public AActor
 public:	
 	// Sets default values for this component's properties
 	ASTUBaseWeapon();
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
-	USkeletalMeshComponent* WeaponMesh;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
-	FName MuzzleSocket = "MuzzleSocket";
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon") 
-	FAmmoData DefaultAmmo;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon") 
-	FWeaponUIData UIData;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon") 
-	float TraceMaxDistance = 10000.f;
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
 
 public:
 	UFUNCTION(BlueprintCallable)
@@ -89,10 +67,34 @@ public:
 	FWeaponUIData GetUIData() const;
 
 	UFUNCTION(BlueprintCallable)
-	FAmmoData GetAmmoData() const;
+	FWeaponAmmoData GetAmmoData() const;
 
+public:
 	UPROPERTY(BlueprintAssignable, BlueprintCallable)
 	FOnEmptyClipSignature OnEmptyClip;
+
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+	USkeletalMeshComponent* WeaponMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+	FName MuzzleSocket = "MuzzleSocket";
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon") 
+	FWeaponUIData UIData;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon") 
+	FWeaponAmmoData AmmoData;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon") 
+	float TraceMaxDistance = 10000.f;
+
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
 
 protected:
 	void DecreaseAmmo();
@@ -110,5 +112,5 @@ protected:
 	bool GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRotation) const;
 
 private:
-	FAmmoData CurrentAmmo;
+	FWeaponAmmoData CurrentAmmo;
 };

@@ -19,7 +19,7 @@ void ASTUBaseWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 
-	CurrentAmmo = DefaultAmmo;
+	CurrentAmmo = AmmoData;
 }
 
 void ASTUBaseWeapon::Tick(float DeltaTime)
@@ -52,7 +52,7 @@ void ASTUBaseWeapon::Reload()
 		CurrentAmmo.Clips = CurrentAmmo.Clips - 1;
 	}
 
-	CurrentAmmo.Bullets = DefaultAmmo.Bullets;	
+	CurrentAmmo.Bullets = AmmoData.Bullets;
 	UE_LOG(LogBaseWeapon, Display, TEXT("Ammo: Reload"));
 	
 	StopFire();
@@ -61,7 +61,7 @@ void ASTUBaseWeapon::Reload()
 
 bool ASTUBaseWeapon::CanReload() const
 {
-	return CurrentAmmo.Bullets < DefaultAmmo.Bullets && (CurrentAmmo.Clips > 0 || CurrentAmmo.bInfinite);
+	return CurrentAmmo.Bullets < AmmoData.Bullets && (CurrentAmmo.Clips > 0 || CurrentAmmo.bInfinite);
 }
 
 FWeaponUIData ASTUBaseWeapon::GetUIData() const
@@ -69,7 +69,7 @@ FWeaponUIData ASTUBaseWeapon::GetUIData() const
 	return UIData;
 }
 
-FAmmoData ASTUBaseWeapon::GetAmmoData() const
+FWeaponAmmoData ASTUBaseWeapon::GetAmmoData() const
 {
 	return CurrentAmmo;
 }

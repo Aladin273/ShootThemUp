@@ -26,9 +26,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual void StopRunning();
 
+protected:
 	UPROPERTY(Category="Character Movement: Walking", EditAnywhere, BlueprintReadWrite, meta=(ClampMin="0", UIMin="0", ForceUnits="cm/s", DisplayAfter="MaxWalkSpeedCrouched"))
 	float MaxWalkSpeedRunning = 1200.f;
 
 private:
-	bool WantsToRun = false;
+	bool bWantsToRun = false;
 };

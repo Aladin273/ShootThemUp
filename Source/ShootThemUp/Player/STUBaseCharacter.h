@@ -23,6 +23,13 @@ public:
 	// Sets default values for this character's properties
 	ASTUBaseCharacter(const FObjectInitializer& ObjInit);
 
+	UFUNCTION(BlueprintCallable)
+	virtual FVector GetInputVelocity() const;
+
+	UFUNCTION(BlueprintCallable)
+	virtual FVector GetRelativeVelocity() const;
+
+protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	USpringArmComponent* SpringArmComponent;
 
@@ -31,9 +38,6 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	UCameraComponent* CameraComponentFP;
-	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
-	UTextRenderComponent* HealthTextComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	USTUHealthComponent* HealthComponent;
@@ -41,6 +45,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	USTUWeaponComponent* WeaponComponent;
 
+protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	UAnimMontage* DeathAnimMontage;
 
@@ -68,13 +73,6 @@ protected:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-public:	
-	UFUNCTION(BlueprintCallable)
-	virtual FVector GetInputVelocity() const;
-
-	UFUNCTION(BlueprintCallable)
-	virtual FVector GetRelativeVelocity() const;
 
 protected:
 	UFUNCTION(BlueprintCallable)

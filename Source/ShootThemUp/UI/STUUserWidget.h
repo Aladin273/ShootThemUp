@@ -7,6 +7,7 @@
 #include "STUUserWidget.generated.h"
 
 struct FWeaponUIData;
+struct FWeaponAmmoData;
 
 /**
  * 
@@ -24,7 +25,7 @@ public:
 	FWeaponUIData GetWeaponUIData() const;
 
 	UFUNCTION(BlueprintCallable)
-	FAmmoData GetWeaponAmmoData() const;
+	FWeaponAmmoData GetWeaponAmmoData() const;
 
 	UFUNCTION(BlueprintCallable)
 	bool IsPlayerAlive() const;
