@@ -3,6 +3,9 @@
 #include "STUHealthComponent.h"
 #include "TimerManager.h"
 
+#include "GameFramework/Pawn.h"
+#include "GameFramework/Controller.h"
+
 #include "../Dev/STUFireDamageType.h"
 #include "../Dev/STUIceDamageType.h"
 
@@ -37,7 +40,7 @@ bool USTUHealthComponent::TryToAddHealth(float HealthAmount)
 {
 	if (!IsDead() && Health < MaxHealth)
 	{
-		Health = FMath::Clamp(Health + HealthAmount, 0.f, MaxHealth);
+		SetHealth(Health + HealthAmount);
 		return true;
 	}
 
@@ -48,8 +51,7 @@ void USTUHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Health = MaxHealth;
-	OnHealthChanged.Broadcast(Health, MaxHealth);
+	SetHealth(MaxHealth);
 
 	GetOwner()->OnTakeAnyDamage.AddDynamic(this, &USTUHealthComponent::OnTakeAnyDamage);
 }
@@ -64,42 +66,57 @@ void USTUHealthComponent::OnTakeAnyDamage(AActor* DamagedActor, float Damage, co
 	if (Damage <= 0.f || IsDead()) 
 		return;
 
-	Health = FMath::Clamp(Health - Damage, 0.f, MaxHealth);
-	OnHealthChanged.Broadcast(Health, MaxHealth);
+	SetHealth(Health - Damage);
 
 	if (IsDead())
 	{
 		OnDeath.Broadcast();
 	}
-	else if (AutoHeal)
+	else if (bAutoHeal)
 	{
 		GetWorld()->GetTimerManager().ClearTimer(HealTimerHandle);
 		GetWorld()->GetTimerManager().SetTimer(HealTimerHandle, this, &USTUHealthComponent::HealUpdate, HealUpdateTime, true, HealDelayTime);
 	}
 
-    //if (DamageType)
-    //{
-    //	if (DamageType->IsA<USTUFireDamageType>())
-    //	{
-    //		UE_LOG(LogHealthComponent, Display, TEXT("So hooooooot!"));
-    //	}
-    //	else if (DamageType->IsA<USTUIceDamageType>())
-    //	{
-    //		UE_LOG(LogHealthComponent, Display, TEXT("So coooooold!"));
-    //	}
-    //}
+	PlayShake();
+}
+
+void USTUHealthComponent::SetHealth(float NewHealth)
+{
+	const float NextHealth = FMath::Clamp(NewHealth, 0.f, MaxHealth);
+	const float HealthDelta = NextHealth - Health;
+
+	Health = NextHealth;
+	OnHealthChanged.Broadcast(Health, HealthDelta, MaxHealth);
 }
 
 void USTUHealthComponent::HealUpdate()
 {
-	if (!AutoHeal || Health == MaxHealth || IsDead())
+	if (!bAutoHeal || Health == MaxHealth || IsDead())
 	{
 		GetWorld()->GetTimerManager().ClearTimer(HealTimerHandle);
 	}
 	else
 	{
-		Health = FMath::Clamp(Health + HealModifier, 0.f, MaxHealth);
-		OnHealthChanged.Broadcast(Health, MaxHealth);
+		SetHealth(Health + HealModifier);
+	}
+}
+
+void USTUHealthComponent::PlayShake()
+{
+	if (!IsDead())
+	{
+		const auto Player = Cast<APawn>(GetOwner());
+
+		if (Player)
+		{
+			const auto Controller = Player->GetController<APlayerController>();
+
+			if (Controller && Controller->PlayerCameraManager)
+			{
+				Controller->PlayerCameraManager->StartCameraShake(CameraShake);
+			}
+		}
 	}
 }
 

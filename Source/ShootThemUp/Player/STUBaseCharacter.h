@@ -79,7 +79,7 @@ protected:
 	virtual void OnDeath();
 
 	UFUNCTION(BlueprintCallable)
-	virtual void OnHealthChanged(float Health, float MaxHealth);
+	virtual void OnHealthChanged(float Health, float HealthDelta, float MaxHealth);
 
 	UFUNCTION(BlueprintCallable)
 	virtual void OnLand(const FHitResult& Hit);

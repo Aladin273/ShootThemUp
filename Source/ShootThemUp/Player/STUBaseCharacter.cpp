@@ -50,7 +50,7 @@ void ASTUBaseCharacter::BeginPlay()
 	CameraComponent->SetActive(true);
 	CameraComponentFP->SetActive(false);
 
-	OnHealthChanged(HealthComponent->GetHealth(), HealthComponent->GetMaxHealth());
+	OnHealthChanged(HealthComponent->GetHealth(), 0.f, HealthComponent->GetMaxHealth());
 
 	HealthComponent->OnDeath.AddDynamic(this, &ASTUBaseCharacter::OnDeath);
 	HealthComponent->OnHealthChanged.AddDynamic(this, &ASTUBaseCharacter::OnHealthChanged);
@@ -104,7 +104,7 @@ void ASTUBaseCharacter::OnDeath()
 	UE_LOG(LogBaseCharacter, Error, TEXT("Is Dead"));
 }
 
-void ASTUBaseCharacter::OnHealthChanged(float Health, float MaxHealth)
+void ASTUBaseCharacter::OnHealthChanged(float Health, float HealthDelta, float MaxHealth)
 {
 	UE_LOG(LogBaseCharacter, Display, TEXT("Health Changed : %.2f / %.2f"), Health, MaxHealth);
 }
@@ -116,6 +116,8 @@ void ASTUBaseCharacter::OnLand(const FHitResult& Hit)
 	if (FallVelocityZ > FallDamageVelocity.X)
 	{
 		PlayAnimMontage(FallAnimMontage);
+
+		WeaponComponent->StopFire();
 
 		GetCharacterMovement()->SetMovementMode(MOVE_None);
 

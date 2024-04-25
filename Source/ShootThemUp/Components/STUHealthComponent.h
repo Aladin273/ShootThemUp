@@ -10,7 +10,7 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeath); // C++ & BP
 
 //DECLARE_MULTICAST_DELEGATE_OneParam(FOnHealthChanged); // C++
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHealthChanged, float, Health, float, MaxHealth); // C++ & BP
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnHealthChanged, float, Health, float, HealthDelta, float, MaxHealth); // C++ & BP
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class SHOOTTHEMUP_API USTUHealthComponent : public UActorComponent
@@ -48,7 +48,7 @@ protected:
 	float MaxHealth = 100.f;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool AutoHeal = true;
+	bool bAutoHeal = true;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = "AutoHeal"))
 	float HealDelayTime = 3.f;
@@ -58,6 +58,9 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = "AutoHeal"))
 	float HealModifier = 1.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VFX")
+	TSubclassOf<UCameraShakeBase> CameraShake;
 
 protected:
 	// Called when the game starts
@@ -70,7 +73,10 @@ protected:
 	virtual void OnTakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 
 private:
+	void SetHealth(float NewHealth);
 	void HealUpdate();
+	
+	void PlayShake();
 	
 	float Health = 0.f;
 	FTimerHandle HealTimerHandle;
