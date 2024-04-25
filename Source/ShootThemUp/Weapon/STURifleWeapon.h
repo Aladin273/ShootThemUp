@@ -4,8 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "STUBaseWeapon.h"
-
 #include "STURifleWeapon.generated.h"
+
+class USTUWeaponFXComponent;
 
 UCLASS()
 class SHOOTTHEMUP_API ASTURifleWeapon : public ASTUBaseWeapon
@@ -20,6 +21,10 @@ public:
 	virtual void StartFire() override;
 	virtual void StopFire() override;
 	virtual bool IsFiring() const override;
+
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+	USTUWeaponFXComponent* WeaponFXComponent;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon") 

@@ -19,7 +19,7 @@ struct FWeaponUIData
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon") 
 	UTexture2D* MainIcon;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon", meta = (EditCondition = "!bInfinite"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	UTexture2D* CrossHairIcon;
 };
 

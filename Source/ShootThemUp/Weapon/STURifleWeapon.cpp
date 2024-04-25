@@ -1,12 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "STURifleWeapon.h"
+#include "Components/STUWeaponFXComponent.h"
 #include "GameFramework/PlayerController.h"
 
 ASTURifleWeapon::ASTURifleWeapon()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+	WeaponFXComponent = CreateDefaultSubobject<USTUWeaponFXComponent>("WeaponFXComponent");
 }
 
 void ASTURifleWeapon::StartFire()
@@ -87,6 +89,8 @@ void ASTURifleWeapon::MakeShot()
 
 		if (DamagedActor)
 			DamagedActor->TakeDamage(DamageAmount, {}, GetPlayerController(), this);
+
+		WeaponFXComponent->PlayImpactFX(HitResult);
 
 		DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), HitResult.ImpactPoint, FColor::Blue, false, 1.0f, 0.f, 3.f);
 		DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10.f, 24, FColor::Red, false, 3.0f);

@@ -4,6 +4,7 @@
 
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Components/STUWeaponFXComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 ASTUProjectile::ASTUProjectile()
@@ -14,11 +15,14 @@ ASTUProjectile::ASTUProjectile()
 	CollisionComponent->InitSphereRadius(5.f);
 	CollisionComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	CollisionComponent->SetCollisionResponseToAllChannels(ECR_Block);
+	CollisionComponent->bReturnMaterialOnMove = true;
 	SetRootComponent(CollisionComponent);
 
 	MovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>("MovementComponent");
 	MovementComponent->InitialSpeed = 3000.f;
 	MovementComponent->ProjectileGravityScale = 1.0f;
+
+	WeaponFXComponent = CreateDefaultSubobject<USTUWeaponFXComponent>("WeaponFXComponent");
 }
 
 void ASTUProjectile::BeginPlay()
@@ -41,6 +45,8 @@ void ASTUProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor
 {
 	MovementComponent->StopMovementImmediately();
 	UGameplayStatics::ApplyRadialDamage(GetWorld(), DamageAmount, GetActorLocation(), DamageRadius, UDamageType::StaticClass(), {}, this, GetController(), bDoFullDamage);
+
+	WeaponFXComponent->PlayImpactFX(Hit);
 
 	DrawDebugSphere(GetWorld(), GetActorLocation(), DamageRadius, 24.f, FColor::Red, false, LifeSpan);
 	Destroy();
