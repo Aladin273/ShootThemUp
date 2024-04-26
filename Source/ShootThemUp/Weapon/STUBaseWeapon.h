@@ -8,6 +8,8 @@
 
 class APlayerController;
 class USkeletalMeshComponent;
+class UNiagaraSystem;
+class UNiagaraComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEmptyClipSignature, ASTUBaseWeapon*, Weapon); // C++ & BP
 
@@ -91,6 +93,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon") 
 	float TraceMaxDistance = 10000.f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VFX") 
+	UNiagaraSystem* MuzzleFX;
 
 protected:
 	// Called when the game starts or when spawned
@@ -114,6 +119,8 @@ protected:
 
 	APlayerController* GetPlayerController() const;
 	bool GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRotation) const;
+
+	UNiagaraComponent* SpawnMuzzleFX();
 
 private:
 	FWeaponAmmoData CurrentAmmo;

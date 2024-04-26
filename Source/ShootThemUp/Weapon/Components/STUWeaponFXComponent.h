@@ -21,10 +21,13 @@ struct FDecalData
 	FVector Size = FVector(10.f);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VFX")
-	float LifeTime = 5.0f;
+	float LifeTime = 10.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VFX")
 	float FadeOutTime = 0.5f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VFX")
+	float FadeScreenSize = 0.001f;
 };
 
 USTRUCT(BlueprintType)

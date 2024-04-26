@@ -29,7 +29,10 @@ void USTUWeaponFXComponent::PlayImpactFX(const FHitResult& HitResult)
 	auto DecalComponent = UGameplayStatics::SpawnDecalAtLocation(GetWorld(), ImpactData.DecalData.Material, ImpactData.DecalData.Size, HitResult.ImpactPoint, HitResult.ImpactNormal.Rotation());
 
 	if (DecalComponent)
+	{
 		DecalComponent->SetFadeOut(ImpactData.DecalData.LifeTime, ImpactData.DecalData.FadeOutTime);
+		DecalComponent->SetFadeScreenSize(ImpactData.DecalData.FadeScreenSize);
+	}
 }
 
 void USTUWeaponFXComponent::BeginPlay()

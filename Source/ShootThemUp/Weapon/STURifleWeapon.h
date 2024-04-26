@@ -6,6 +6,9 @@
 #include "STUBaseWeapon.h"
 #include "STURifleWeapon.generated.h"
 
+class UNiagaraSystem;
+class UNiagaraComponent;
+
 class USTUWeaponFXComponent;
 
 UCLASS()
@@ -42,6 +45,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon") 
 	float RecoilHorizontal = 0.125f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VFX")
+	FString TraceTargetName = "TraceTarget";
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VFX")
+	UNiagaraSystem* TraceFX;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -62,4 +71,11 @@ private:
 
 	float RecoilTargetVertical = 0.f;
 	float RecoilTargetHorizontal = 0.f;
+
+	UPROPERTY()
+	UNiagaraComponent* MuzzleFXComponent;
+
+	void InitMuzzleFX();
+	void SetMuzzleFXVisibility(bool Visible);
+	void SpawnTraceFX(const FVector& TraceStart, const FVector& TraceEnd);
 };
