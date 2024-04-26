@@ -34,5 +34,4 @@ protected:
 
 protected:
 	virtual void MakeShot() override;
-	virtual bool GetTraceData(FVector& TraceStart, FVector& TraceEnd) override;
 };

@@ -58,5 +58,5 @@ protected:
 private:
 	AController* GetController() const;
 
-	FVector ShotDirection;
+	FVector ShotDirection = FVector::ZeroVector;
 };

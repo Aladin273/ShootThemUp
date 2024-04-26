@@ -86,16 +86,23 @@ protected:
 	FName MuzzleSocket = "MuzzleSocket";
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon") 
+	float TraceMaxDistance = 10000.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon") 
 	FWeaponUIData UIData;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon") 
 	FWeaponAmmoData AmmoData;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon") 
-	float TraceMaxDistance = 10000.f;
-	
+protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VFX") 
 	UNiagaraSystem* MuzzleFX;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VFX")
+	UNiagaraSystem* TraceFX;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VFX")
+	FString TraceTargetName = "TraceTarget";
 
 protected:
 	// Called when the game starts or when spawned
@@ -121,6 +128,7 @@ protected:
 	bool GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRotation) const;
 
 	UNiagaraComponent* SpawnMuzzleFX();
+	UNiagaraComponent* SpawnTraceFX(const FVector& TraceStart, const FVector& TraceEnd);
 
 private:
 	FWeaponAmmoData CurrentAmmo;

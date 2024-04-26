@@ -45,12 +45,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon") 
 	float RecoilHorizontal = 0.125f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VFX")
-	FString TraceTargetName = "TraceTarget";
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VFX")
-	UNiagaraSystem* TraceFX;
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -60,7 +54,8 @@ protected:
 
 protected:
 	virtual void MakeShot() override;
-	virtual bool GetTraceData(FVector& TraceStart, FVector& TraceEnd) override;
+
+	virtual void MakeDamage(const FHitResult& HitResult);
 
 private:
 	bool bWantsToFire = false;
@@ -71,11 +66,4 @@ private:
 
 	float RecoilTargetVertical = 0.f;
 	float RecoilTargetHorizontal = 0.f;
-
-	UPROPERTY()
-	UNiagaraComponent* MuzzleFXComponent;
-
-	void InitMuzzleFX();
-	void SetMuzzleFXVisibility(bool Visible);
-	void SpawnTraceFX(const FVector& TraceStart, const FVector& TraceEnd);
 };

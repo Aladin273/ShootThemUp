@@ -7,7 +7,6 @@
 ASTULauncherWeapon::ASTULauncherWeapon()
 {
 	PrimaryActorTick.bCanEverTick = false;
-
 }
 
 void ASTULauncherWeapon::StartFire()
@@ -61,19 +60,12 @@ void ASTULauncherWeapon::MakeShot()
 
 	if (HitResult.bBlockingHit)
 	{
-		//DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), HitResult.ImpactPoint, FColor::Blue, false, 1.0f, 0.f, 3.f);
 		//DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10.f, 24, FColor::Red, false, 3.0f);
 	}
-	else
-	{
-		//DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), TraceEnd, FColor::Blue, false, 1.0f, 0.f, 3.f);
-	}
 
-	DecreaseAmmo();
+	//DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), EndPoint, FColor::Blue, false, 1.0f, 0.f, 3.f);
+	
 	SpawnMuzzleFX();
-}
-
-bool ASTULauncherWeapon::GetTraceData(FVector& TraceStart, FVector& TraceEnd)
-{
-	return Super::GetTraceData(TraceStart, TraceEnd);
+	
+	DecreaseAmmo();	
 }
