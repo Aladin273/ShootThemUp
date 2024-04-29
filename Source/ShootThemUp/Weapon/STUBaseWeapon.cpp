@@ -204,15 +204,26 @@ APlayerController* ASTUBaseWeapon::GetPlayerController() const
 
 bool ASTUBaseWeapon::GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRotation) const
 {
-	APlayerController* Controller = GetPlayerController();
+	ACharacter* Character = Cast<ACharacter>(GetOwner());
 
-	if (Controller)
+	if (Character->IsPlayerControlled())
 	{
-		Controller->GetPlayerViewPoint(ViewLocation, ViewRotation);
+		APlayerController* Controller = GetPlayerController();
+
+		if (Controller)
+		{
+			Controller->GetPlayerViewPoint(ViewLocation, ViewRotation);
+			return true;
+		}
+
+		return false;
+	}
+	else
+	{
+		ViewLocation = WeaponMesh->GetSocketLocation(MuzzleSocket);
+		ViewRotation = WeaponMesh->GetSocketRotation(MuzzleSocket);
 		return true;
 	}
-
-	return false;
 }
 
 UNiagaraComponent* ASTUBaseWeapon::SpawnMuzzleFX()
