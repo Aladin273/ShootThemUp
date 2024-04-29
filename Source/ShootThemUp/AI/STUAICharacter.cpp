@@ -5,8 +5,8 @@
 #include "STUAIController.h"
 
 #include "GameFramework/CharacterMovementComponent.h"
-
 #include "../Components/STUAIWeaponComponent.h"
+#include "BrainComponent.h"
 
 ASTUAICharacter::ASTUAICharacter(const FObjectInitializer& ObjInit)
     : Super(ObjInit.SetDefaultSubobjectClass<USTUAIWeaponComponent>("WeaponComponent"))
@@ -25,4 +25,14 @@ ASTUAICharacter::ASTUAICharacter(const FObjectInitializer& ObjInit)
 UBehaviorTree* ASTUAICharacter::GetBehaviorTreeAsset() const
 {
     return BehaviorTreeAsset;
+}
+
+void ASTUAICharacter::OnDeath()
+{
+    Super::OnDeath();
+
+    AAIController* AIController = Cast<AAIController>(Controller);
+
+    if (AIController && AIController->BrainComponent)
+        AIController->BrainComponent->Cleanup();
 }
