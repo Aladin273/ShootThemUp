@@ -29,19 +29,19 @@ public:
 	USTUWeaponComponent();
 
 	UFUNCTION(BlueprintCallable)
-	void StartFire();
+	virtual void StartFire();
 
 	UFUNCTION(BlueprintCallable)
-	void StopFire();
+	virtual void StopFire();
 
 	UFUNCTION(BlueprintCallable)
-	bool IsFiring() const;
+	virtual bool IsFiring() const;
 
 	UFUNCTION(BlueprintCallable)
-	void NextWeapon();
+	virtual void NextWeapon();
 
 	UFUNCTION(BlueprintCallable)
-	void Reload();
+	virtual void Reload();
 
 	UFUNCTION(BlueprintCallable)
 	FWeaponUIData GetUIData() const;
@@ -78,16 +78,28 @@ protected:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-private:
+protected:
 	bool CanFire() const;
 	bool CanEquip() const;
 	bool CanReload() const;
 
-	void InitAnimations();
-	void SpawnWeapons();
 	void EquipWeapon(int32 Index);
+
+	struct FWeaponDataInternal
+	{
+		ASTUBaseWeapon* Weapon;
+		UAnimMontage* ReloadAnimMontage;
+	};
+
+	TArray<FWeaponDataInternal> Weapons;
+	FWeaponDataInternal CurrentWeapon;
+	int32 CurrentWeaponIndex = 0;
+
+private:
+	void SpawnWeapons();
 	void AttachToSocket(ASTUBaseWeapon* Weapon, USceneComponent* Component, FName SocketName);
 
+	void InitAnimations();
 	void PlayAnimMontage(UAnimMontage* AnimMontage);
 
 	UFUNCTION()
@@ -103,14 +115,4 @@ private:
 
 	UFUNCTION()
 	void OnReload(ASTUBaseWeapon* Weapon);
-
-	struct FWeaponDataInternal
-	{
-		ASTUBaseWeapon* Weapon;
-		UAnimMontage* ReloadAnimMontage;
-	};
-
-	TArray<FWeaponDataInternal> Weapons;
-	FWeaponDataInternal CurrentWeapon;	
-	int32 CurrentWeaponIndex = 0;
 };

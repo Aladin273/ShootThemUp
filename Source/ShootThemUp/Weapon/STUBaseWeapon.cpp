@@ -69,6 +69,21 @@ bool ASTUBaseWeapon::CanReload() const
 	return CurrentAmmo.Bullets < AmmoData.Bullets && (CurrentAmmo.Stock > 0 || CurrentAmmo.bInfinite);
 }
 
+bool ASTUBaseWeapon::IsAmmoFull() const
+{
+	return CurrentAmmo.Bullets == AmmoData.Bullets && (CurrentAmmo.Stock == AmmoData.Stock || CurrentAmmo.bInfinite);
+}
+
+bool ASTUBaseWeapon::IsAmmoEmpty() const
+{
+	return !CurrentAmmo.bInfinite && CurrentAmmo.Stock == 0 && CurrentAmmo.Bullets == 0;
+}
+
+bool ASTUBaseWeapon::IsClipEmpty() const
+{
+	return CurrentAmmo.Bullets == 0;
+}
+
 FWeaponUIData ASTUBaseWeapon::GetUIData() const
 {
 	return UIData;
@@ -107,21 +122,6 @@ void ASTUBaseWeapon::DecreaseAmmo()
             StopFire();
         }
 	}
-}
-
-bool ASTUBaseWeapon::IsAmmoFull() const
-{
-	return CurrentAmmo.Bullets == AmmoData.Bullets && (CurrentAmmo.Stock == AmmoData.Stock || CurrentAmmo.bInfinite);
-}
-
-bool ASTUBaseWeapon::IsAmmoEmpty() const
-{
-	return !CurrentAmmo.bInfinite && CurrentAmmo.Stock == 0 && CurrentAmmo.Bullets == 0;
-}
-
-bool ASTUBaseWeapon::IsClipEmpty() const
-{
-	return CurrentAmmo.Bullets == 0;
 }
 
 void ASTUBaseWeapon::LogAmmo()

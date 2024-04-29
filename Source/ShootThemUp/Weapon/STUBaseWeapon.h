@@ -66,6 +66,15 @@ public:
 	bool CanReload() const;
 
 	UFUNCTION(BlueprintCallable)
+	bool IsAmmoFull() const;
+
+	UFUNCTION(BlueprintCallable)
+	bool IsAmmoEmpty() const;
+
+	UFUNCTION(BlueprintCallable)
+	bool IsClipEmpty() const;
+
+	UFUNCTION(BlueprintCallable)
 	FWeaponUIData GetUIData() const;
 
 	UFUNCTION(BlueprintCallable)
@@ -113,9 +122,6 @@ protected:
 
 protected:
 	void DecreaseAmmo();
-	bool IsAmmoFull() const;
-	bool IsAmmoEmpty() const;
-	bool IsClipEmpty() const;
 	void LogAmmo();
 
 	virtual void MakeShot();

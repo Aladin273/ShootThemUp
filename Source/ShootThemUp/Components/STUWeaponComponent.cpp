@@ -37,12 +37,6 @@ void USTUWeaponComponent::NextWeapon()
 {
 	if (CanEquip())
 	{
-		PlayAnimMontage(EquipAnimMontage);
-		bEquipAnimInProgress = true;
-		
-		if (CurrentWeapon.Weapon)
-			CurrentWeapon.Weapon->StopFire();
-
 		CurrentWeaponIndex = (CurrentWeaponIndex + 1) % Weapons.Num();
 		EquipWeapon(CurrentWeaponIndex);
 	}
@@ -129,6 +123,57 @@ bool USTUWeaponComponent::CanReload() const
 	return !bEquipAnimInProgress && !bReloadAnimInProgress && CurrentWeapon.Weapon && CurrentWeapon.Weapon->CanReload();
 }
 
+void USTUWeaponComponent::EquipWeapon(int32 Index)
+{
+	if (Index < 0 || Index >= Weapons.Num())
+		return;
+
+	ACharacter* Character = Cast<ACharacter>(GetOwner());
+
+	if (Character)
+	{
+		if (CurrentWeapon.Weapon)
+		{
+			CurrentWeapon.Weapon->StopFire();
+			AttachToSocket(CurrentWeapon.Weapon, Character->GetMesh(), WeaponArmorySocket);
+		}
+
+		PlayAnimMontage(EquipAnimMontage);
+		bEquipAnimInProgress = true;
+			
+		CurrentWeapon = Weapons[Index];
+		AttachToSocket(CurrentWeapon.Weapon, Character->GetMesh(), WeaponEquipSocket);
+	}
+}
+
+void USTUWeaponComponent::SpawnWeapons()
+{
+	ACharacter* Character = Cast<ACharacter>(GetOwner());
+
+	if (Character)
+	{
+		for (auto WeaponDataIterator : WeaponData)
+		{
+			ASTUBaseWeapon* Weapon = GetWorld()->SpawnActor<ASTUBaseWeapon>(WeaponDataIterator.WeaponClass);
+
+			if (Weapon)
+			{
+				Weapons.Add({ Weapon, WeaponDataIterator.ReloadAnimMontage });
+				Weapon->SetOwner(Character);
+				if (bAutoReload)
+					Weapon->OnEmptyClip.AddDynamic(this, &USTUWeaponComponent::OnReload);
+				AttachToSocket(Weapon, Character->GetMesh(), WeaponArmorySocket);
+			}
+		}
+	}
+}
+
+void USTUWeaponComponent::AttachToSocket(ASTUBaseWeapon* Weapon, USceneComponent* Component, FName SocketName)
+{
+	FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, false);
+	Weapon->AttachToComponent(Component, AttachmentRules, SocketName);
+}
+
 void USTUWeaponComponent::InitAnimations()
 {
 	ACharacter* Character = Cast<ACharacter>(GetOwner());
@@ -158,51 +203,6 @@ void USTUWeaponComponent::InitAnimations()
 				ReloadFinishedNotify->OnNotified.AddDynamic(this, &USTUWeaponComponent::OnReloadFinished);
 		}
 	}
-}
-
-void USTUWeaponComponent::SpawnWeapons()
-{
-	ACharacter* Character = Cast<ACharacter>(GetOwner());
-
-	if (Character)
-	{
-		for (auto WeaponDataIterator : WeaponData)
-		{
-			ASTUBaseWeapon* Weapon = GetWorld()->SpawnActor<ASTUBaseWeapon>(WeaponDataIterator.WeaponClass);
-
-			if (Weapon)
-			{
-				Weapons.Add({ Weapon, WeaponDataIterator.ReloadAnimMontage });
-				Weapon->SetOwner(Character);
-				if (bAutoReload)
-					Weapon->OnEmptyClip.AddDynamic(this, &USTUWeaponComponent::OnReload);
-				AttachToSocket(Weapon, Character->GetMesh(), WeaponArmorySocket);
-			}
-		}
-	}
-}
-
-void USTUWeaponComponent::EquipWeapon(int32 Index)
-{
-	if (Index < 0 || Index >= Weapons.Num())
-		return;
-
-	ACharacter* Character = Cast<ACharacter>(GetOwner());
-
-	if (Character)
-	{
-		if (CurrentWeapon.Weapon)
-			AttachToSocket(CurrentWeapon.Weapon, Character->GetMesh(), WeaponArmorySocket);
-
-		CurrentWeapon = Weapons[Index];
-		AttachToSocket(CurrentWeapon.Weapon, Character->GetMesh(), WeaponEquipSocket);
-	}
-}
-
-void USTUWeaponComponent::AttachToSocket(ASTUBaseWeapon* Weapon, USceneComponent* Component, FName SocketName)
-{
-	FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, false);
-	Weapon->AttachToComponent(Component, AttachmentRules, SocketName);
 }
 
 void USTUWeaponComponent::PlayAnimMontage(UAnimMontage* AnimMontage)
