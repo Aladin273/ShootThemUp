@@ -17,6 +17,8 @@ public:
 	// Sets default values for this actor's properties
 	ASTUBasePickup();
 
+	bool CanBeTaken();
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	USphereComponent* CollisionComponent;
@@ -41,4 +43,6 @@ private:
 
 	void PickupWasTaken();
 	void Respawn();
+
+	FTimerHandle RespawnTimerHandle;
 };
