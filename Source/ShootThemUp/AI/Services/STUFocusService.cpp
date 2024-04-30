@@ -21,12 +21,11 @@ void USTUFocusService::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMe
 
         if (EnemyObject)
         {
-            const auto EnemyActor = Cast<AActor>(EnemyObject);
-
-            if (EnemyActor)
-            {
-                Controller->SetFocus(EnemyActor);
-            }
+            Controller->SetFocus(Cast<AActor>(EnemyObject));
+        }
+        else
+        {
+            Controller->ClearFocus(EAIFocusPriority::Gameplay);
         }
     }
 
