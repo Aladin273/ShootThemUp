@@ -52,6 +52,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool TryToAddAmmo(TSubclassOf<ASTUBaseWeapon> WeaponClass, int32 Bullets);
 
+	UFUNCTION(BlueprintCallable)
+	bool IsNeedAmmo(TSubclassOf<ASTUBaseWeapon> WeaponClass);
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	TArray<FWeaponData> WeaponData;

@@ -16,7 +16,7 @@ void USTUAIWeaponComponent::StartFire()
 
 void USTUAIWeaponComponent::NextWeapon()
 {
-    if (CanEquip())
+    if (CanFire() && CanEquip())
     {
         int32 NextIndex = CurrentWeaponIndex;
 
