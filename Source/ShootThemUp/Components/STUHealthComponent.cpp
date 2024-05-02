@@ -9,6 +9,8 @@
 #include "../Dev/STUFireDamageType.h"
 #include "../Dev/STUIceDamageType.h"
 
+#include "../STUGameModeBase.h"
+
 DEFINE_LOG_CATEGORY_STATIC(LogHealthComponent, All, All)
 
 USTUHealthComponent::USTUHealthComponent()
@@ -70,6 +72,7 @@ void USTUHealthComponent::OnTakeAnyDamage(AActor* DamagedActor, float Damage, co
 
 	if (IsDead())
 	{
+		Killed(InstigatedBy);
 		OnDeath.Broadcast();
 	}
 	else if (bAutoHeal)
@@ -117,6 +120,19 @@ void USTUHealthComponent::PlayShake()
 				Controller->PlayerCameraManager->StartCameraShake(CameraShake);
 			}
 		}
+	}
+}
+
+void USTUHealthComponent::Killed(AController* Killer)
+{
+	const auto GameMode = Cast<ASTUGameModeBase>(GetWorld()->GetAuthGameMode());
+
+	if (GameMode)
+	{
+		const auto Player = Cast<APawn>(GetOwner());
+		const auto Controller = Player ? Player->Controller : nullptr;
+
+		GameMode->Killed(Killer, Controller);
 	}
 }
 

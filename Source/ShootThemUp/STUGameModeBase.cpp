@@ -24,6 +24,7 @@ void ASTUGameModeBase::StartPlay()
 
     SpawnBots();
     CreateTeams();
+    
     StartRound();
 }
 
@@ -33,8 +34,41 @@ UClass* ASTUGameModeBase::GetDefaultPawnClassForController_Implementation(AContr
     {
         return AIPawnClass;
     }
-    
+
     return Super::GetDefaultPawnClassForController_Implementation(InController);
+}
+
+void ASTUGameModeBase::Killed(AController* Killer, AController* Victim)
+{
+    if (Killer)
+    {
+        const auto PlayerState = Cast<ASTUPlayerState>(Killer->PlayerState);
+        if (PlayerState) PlayerState->AddKill();
+    }
+
+    if (Victim)
+    {
+        const auto PlayerState = Cast<ASTUPlayerState>(Victim->PlayerState);
+        if (PlayerState) PlayerState->AddDeath();
+    }
+}
+
+void ASTUGameModeBase::LogInfo()
+{
+    for (auto Iterator = GetWorld()->GetControllerIterator(); Iterator; ++Iterator)
+    {
+        const auto Controller = Iterator->Get();
+
+        if (Controller)
+        {
+            const auto PlayerState = Cast<ASTUPlayerState>(Controller->PlayerState);
+
+            if (PlayerState)
+            {
+                PlayerState->LogInfo();
+            }
+        }
+    }
 }
 
 void ASTUGameModeBase::SpawnBots()
@@ -46,52 +80,6 @@ void ASTUGameModeBase::SpawnBots()
 
         const auto AIController = GetWorld()->SpawnActor<AAIController>(AIControllerClass, SpawnParams);
         RestartPlayer(AIController);
-    }
-}
-
-void ASTUGameModeBase::StartRound()
-{
-    RoundCountDown = GameData.RoundsTime;
-
-    GetWorldTimerManager().SetTimer(RoundTimerHandle, this, &ASTUGameModeBase::UpdateRound, 1.0f, true);
-
-    UE_LOG(LogGameModeBase, Display, TEXT("--------- Round %i / %i ---------"), CurrentRound, GameData.RoundsNum);
-}
-
-void ASTUGameModeBase::UpdateRound()
-{
-    if (--RoundCountDown <= 0)
-    {
-        GetWorldTimerManager().ClearTimer(RoundTimerHandle);
-
-        if (++CurrentRound <= GameData.RoundsNum)
-        {
-            StartRound();
-            ResetPlayers();
-        }
-        else
-        {
-            UE_LOG(LogGameModeBase, Display, TEXT("--------- GameOver ---------"));
-        }
-    }
-}
-
-void ASTUGameModeBase::ResetPlayer(AController* InController)
-{
-    if (InController && InController->GetPawn())
-    {
-        InController->GetPawn()->Reset();
-    }
-
-    RestartPlayer(InController);
-    SetPlayerColor(InController);
-}
-
-void ASTUGameModeBase::ResetPlayers()
-{
-    for (auto Iterator = GetWorld()->GetControllerIterator(); Iterator; ++Iterator)
-    {
-        ResetPlayer(Iterator->Get());
     }
 }
 
@@ -141,5 +129,53 @@ void ASTUGameModeBase::SetPlayerColor(AController* InController)
         {
             Character->SetPlayerColor(PlayerState->GetTeamColor());
         }
+    }
+}
+
+void ASTUGameModeBase::StartRound()
+{
+    RoundCountDown = GameData.RoundsTime;
+
+    GetWorldTimerManager().SetTimer(RoundTimerHandle, this, &ASTUGameModeBase::UpdateRound, 1.0f, true);
+
+    UE_LOG(LogGameModeBase, Display, TEXT("--------- Round %i / %i ---------"), CurrentRound, GameData.RoundsNum);
+}
+
+void ASTUGameModeBase::UpdateRound()
+{
+    if (--RoundCountDown <= 0)
+    {
+        GetWorldTimerManager().ClearTimer(RoundTimerHandle);
+
+        if (++CurrentRound <= GameData.RoundsNum)
+        {
+            StartRound();
+            ResetPlayers();
+        }
+        else
+        {
+            UE_LOG(LogGameModeBase, Display, TEXT("--------- Stats ---------"));
+            LogInfo();
+            UE_LOG(LogGameModeBase, Display, TEXT("--------- GameOver ---------"));
+        }
+    }
+}
+
+void ASTUGameModeBase::ResetPlayer(AController* InController)
+{
+    if (InController && InController->GetPawn())
+    {
+        InController->GetPawn()->Reset();
+    }
+
+    RestartPlayer(InController);
+    SetPlayerColor(InController);
+}
+
+void ASTUGameModeBase::ResetPlayers()
+{
+    for (auto Iterator = GetWorld()->GetControllerIterator(); Iterator; ++Iterator)
+    {
+        ResetPlayer(Iterator->Get());
     }
 }

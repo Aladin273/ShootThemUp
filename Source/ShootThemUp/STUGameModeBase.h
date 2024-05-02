@@ -42,6 +42,11 @@ public:
 
 	virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
 
+public:
+	virtual void Killed(AController* Killer, AController* Victim);
+
+	virtual void LogInfo();
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game")
 	TSubclassOf<AAIController> AIControllerClass;
@@ -54,15 +59,15 @@ protected:
 
 private:
 	void SpawnBots();
+	void CreateTeams();
+
+	void SetPlayerColor(AController* InController);
 
 	void StartRound();
 	void UpdateRound();
 
 	void ResetPlayer(AController* InController);
 	void ResetPlayers();
-
-	void CreateTeams();
-	void SetPlayerColor(AController* InController);
 
 	int32 CurrentRound = 1;
 	int32 RoundCountDown = 0;

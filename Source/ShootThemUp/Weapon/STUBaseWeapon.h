@@ -130,8 +130,8 @@ protected:
 	void MakeHit(FHitResult& HitResult, const FVector& TraceStart, const FVector& TraceEnd);
 	FVector GetMuzzleWorldLocation() const;
 
-	APlayerController* GetPlayerController() const;
-	bool GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRotation) const;
+	AController* GetController() const;
+	bool GetViewPoint(FVector& ViewLocation, FRotator& ViewRotation) const;
 
 	UNiagaraComponent* SpawnMuzzleFX();
 	UNiagaraComponent* SpawnTraceFX(const FVector& TraceStart, const FVector& TraceEnd);

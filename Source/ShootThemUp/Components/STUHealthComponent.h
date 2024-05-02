@@ -77,6 +77,7 @@ private:
 	void HealUpdate();
 	
 	void PlayShake();
+	void Killed(AController* Killer);
 	
 	float Health = 0.f;
 	FTimerHandle HealTimerHandle;

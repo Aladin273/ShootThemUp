@@ -167,7 +167,7 @@ bool ASTUBaseWeapon::GetTraceData(FVector& TraceStart, FVector& TraceEnd)
     FVector ViewLocation;
     FRotator ViewRotation;
 
-    if (GetPlayerViewPoint(ViewLocation, ViewRotation))
+    if (GetViewPoint(ViewLocation, ViewRotation))
     {
         TraceStart = ViewLocation;
         TraceEnd = TraceStart + ViewRotation.Vector() * TraceMaxDistance;
@@ -192,23 +192,19 @@ FVector ASTUBaseWeapon::GetMuzzleWorldLocation() const
 	return WeaponMesh->GetSocketLocation(MuzzleSocket);
 }
 
-APlayerController* ASTUBaseWeapon::GetPlayerController() const
+AController* ASTUBaseWeapon::GetController() const
 {
-	ACharacter* Player = Cast<ACharacter>(GetOwner());
-	
-	if (Player)
-		return Cast<APlayerController>(Player->GetController());
-
-	return nullptr;
+	APawn* Pawn = Cast<APawn>(GetOwner());
+	return Pawn ? Pawn->GetController() : nullptr;
 }
 
-bool ASTUBaseWeapon::GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRotation) const
+bool ASTUBaseWeapon::GetViewPoint(FVector& ViewLocation, FRotator& ViewRotation) const
 {
 	ACharacter* Character = Cast<ACharacter>(GetOwner());
 
 	if (Character->IsPlayerControlled())
 	{
-		APlayerController* Controller = GetPlayerController();
+		APlayerController* Controller = Cast<APlayerController>(GetController());
 
 		if (Controller)
 		{
@@ -218,12 +214,11 @@ bool ASTUBaseWeapon::GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRot
 
 		return false;
 	}
-	else
-	{
-		ViewLocation = WeaponMesh->GetSocketLocation(MuzzleSocket);
-		ViewRotation = WeaponMesh->GetSocketRotation(MuzzleSocket);
-		return true;
-	}
+	
+	ViewLocation = WeaponMesh->GetSocketLocation(MuzzleSocket);
+	ViewRotation = WeaponMesh->GetSocketRotation(MuzzleSocket);
+	
+	return true;
 }
 
 UNiagaraComponent* ASTUBaseWeapon::SpawnMuzzleFX()

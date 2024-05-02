@@ -55,7 +55,7 @@ void ASTURifleWeapon::Tick(float DeltaTime)
 
 	if (bWantsToRecoil && LastRecoilElapsed < RecoilDuration)
 	{
-		APlayerController* Controller = GetPlayerController();
+		APlayerController* Controller = Cast<APlayerController>(GetController());
 
 		if (Controller)
 		{
@@ -110,5 +110,5 @@ void ASTURifleWeapon::MakeDamage(const FHitResult& HitResult)
 	AActor* DamagedActor = HitResult.GetActor();
 
 	if (DamagedActor)
-		DamagedActor->TakeDamage(DamageAmount, {}, GetPlayerController(), this);
+		DamagedActor->TakeDamage(DamageAmount, {}, GetController(), this);
 }
