@@ -43,8 +43,19 @@ public:
 	virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
 
 public:
+	UFUNCTION(BlueprintCallable, Category = "Game")
+	int32 GetCurrentRoundNum() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Game")
+	int32 GetTotalRoundsNum() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Game")
+	int32 GetRoundTimeRemaining() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Game")
 	virtual void Killed(AController* Killer, AController* Victim);
 
+	UFUNCTION(BlueprintCallable, Category = "Game")
 	virtual void LogInfo();
 
 protected:

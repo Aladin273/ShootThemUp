@@ -1,54 +1,54 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "STUUserWidget.h"
+#include "STUPlayerWidget.h"
 
 #include "../Components/STUHealthComponent.h"
 #include "../Components/STUWeaponComponent.h"
 
 #include "../STUUtils.h"
 
-float USTUUserWidget::GetHealthPercent() const
+float USTUPlayerWidget::GetHealthPercent() const
 {
     const auto HealthComponent = STUUtils::GetSTUPlayerComponent<USTUHealthComponent>(GetOwningPlayerPawn());
     return HealthComponent ? HealthComponent->GetHealthPercent() : 0.f;
 }
 
-FWeaponUIData USTUUserWidget::GetWeaponUIData() const
+FWeaponUIData USTUPlayerWidget::GetWeaponUIData() const
 {
     const auto WeaponComponent = STUUtils::GetSTUPlayerComponent<USTUWeaponComponent>(GetOwningPlayerPawn());
     return WeaponComponent ? WeaponComponent->GetUIData() : FWeaponUIData{};
 }
 
-FWeaponAmmoData USTUUserWidget::GetWeaponAmmoData() const
+FWeaponAmmoData USTUPlayerWidget::GetWeaponAmmoData() const
 {
     const auto WeaponComponent = STUUtils::GetSTUPlayerComponent<USTUWeaponComponent>(GetOwningPlayerPawn());
     return WeaponComponent ? WeaponComponent->GetAmmoData() : FWeaponAmmoData{};
 }
 
-bool USTUUserWidget::IsPlayerAlive() const
+bool USTUPlayerWidget::IsPlayerAlive() const
 {
     const auto HealthComponent = STUUtils::GetSTUPlayerComponent<USTUHealthComponent>(GetOwningPlayerPawn());
     return HealthComponent ? !HealthComponent->IsDead() : false;
 }
 
-bool USTUUserWidget::IsPlayerSpectating() const
+bool USTUPlayerWidget::IsPlayerSpectating() const
 {
     const AController* Controller = GetOwningPlayer();
     return Controller && Controller->GetStateName() == NAME_Spectating;
 }
 
-bool USTUUserWidget::Initialize()
+bool USTUPlayerWidget::Initialize()
 {
     const auto HealthComponent = STUUtils::GetSTUPlayerComponent<USTUHealthComponent>(GetOwningPlayerPawn());
 
     if (HealthComponent)
-        HealthComponent->OnHealthChanged.AddDynamic(this, &USTUUserWidget::OnHealthChanged);
+        HealthComponent->OnHealthChanged.AddDynamic(this, &USTUPlayerWidget::OnHealthChanged);
 
     return Super::Initialize();
 }
 
-void USTUUserWidget::OnHealthChanged(float Health, float HealthDelta, float MaxHealth)
+void USTUPlayerWidget::OnHealthChanged(float Health, float HealthDelta, float MaxHealth)
 {
     if (HealthDelta < 0.f)
         OnTakeDamage();

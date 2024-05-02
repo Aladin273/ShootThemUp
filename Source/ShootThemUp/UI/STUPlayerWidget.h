@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "STUUserWidget.generated.h"
+#include "STUPlayerWidget.generated.h"
 
 struct FWeaponUIData;
 struct FWeaponAmmoData;
@@ -13,7 +13,7 @@ struct FWeaponAmmoData;
  * 
  */
 UCLASS()
-class SHOOTTHEMUP_API USTUUserWidget : public UUserWidget
+class SHOOTTHEMUP_API USTUPlayerWidget : public UUserWidget
 {
 	GENERATED_BODY()
 

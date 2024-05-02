@@ -28,6 +28,21 @@ void ASTUGameModeBase::StartPlay()
     StartRound();
 }
 
+int32 ASTUGameModeBase::GetCurrentRoundNum() const
+{
+    return CurrentRound;
+}
+
+int32 ASTUGameModeBase::GetTotalRoundsNum() const
+{
+    return GameData.RoundsNum;
+}
+
+int32 ASTUGameModeBase::GetRoundTimeRemaining() const
+{
+    return RoundCountDown;
+}
+
 UClass* ASTUGameModeBase::GetDefaultPawnClassForController_Implementation(AController* InController)
 {
     if (InController && InController->IsA<AAIController>())
