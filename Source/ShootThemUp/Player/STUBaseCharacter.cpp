@@ -43,6 +43,16 @@ FVector ASTUBaseCharacter::GetRelativeVelocity() const
 	return GetActorRotation().UnrotateVector(GetVelocity());
 }
 
+void ASTUBaseCharacter::SetPlayerColor(const FLinearColor& Color)
+{
+	const auto MaterialInst = GetMesh()->CreateAndSetMaterialInstanceDynamic(0);
+
+	if (MaterialInst)
+	{
+		MaterialInst->SetVectorParameterValue(MaterialColorName, Color);
+	}
+}
+
 void ASTUBaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();

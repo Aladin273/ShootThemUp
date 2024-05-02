@@ -20,8 +20,11 @@ struct FGameData
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game", meta = (ClampMin = "1", ClampMax = "12"))
 	int32 RoundsNum = 4;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game", meta = (ClampMin = "1", ClampMax = "12"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game", meta = (ClampMin = "1", ClampMax = "120"))
 	int32 RoundsTime = 30;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game", meta = (ClampMin = "0"))
+	TArray<FLinearColor> TeamsInfo;
 };
 
 /**
@@ -57,6 +60,9 @@ private:
 
 	void ResetPlayer(AController* InController);
 	void ResetPlayers();
+
+	void CreateTeams();
+	void SetPlayerColor(AController* InController);
 
 	int32 CurrentRound = 1;
 	int32 RoundCountDown = 0;

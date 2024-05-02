@@ -5,6 +5,7 @@
 #include "AIController.h"
 #include "STUHealthComponent.h"
 #include "Perception/AISense_Sight.h"
+#include "../STUUtils.h"
 
 AActor* USTUAIPerceptionComponent::GetClosestEnemy() const
 {
@@ -27,8 +28,11 @@ AActor* USTUAIPerceptionComponent::GetClosestEnemy() const
                 for (auto PercieveActor : PercieveActors)
                 {
                     const auto HealthComponent = PercieveActor->FindComponentByClass<USTUHealthComponent>();
+                 
+                    const auto PercievePawn = Cast<APawn>(PercieveActor);
+                    const auto AreEnemies = PercievePawn && STUUtils::AreEnemies(Controller, PercievePawn->Controller);
 
-                    if (HealthComponent && !HealthComponent->IsDead())
+                    if (HealthComponent && !HealthComponent->IsDead() && AreEnemies)
                     {
                         const auto Distance = (PercieveActor->GetActorLocation() - Pawn->GetActorLocation()).Length();
 

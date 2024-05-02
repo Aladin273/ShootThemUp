@@ -29,6 +29,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual FVector GetRelativeVelocity() const;
 
+	UFUNCTION(BlueprintCallable)
+	void SetPlayerColor(const FLinearColor& Color);
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	USpringArmComponent* SpringArmComponent;
@@ -63,6 +66,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
 	FVector2D FallDamageVelocity = FVector2D(800.f, 1600.f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Material")
+	FName MaterialColorName = "Paint Color";
 
 protected:
 	// Called when the game starts or when spawned
