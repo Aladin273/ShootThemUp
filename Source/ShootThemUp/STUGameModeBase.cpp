@@ -207,6 +207,6 @@ void ASTUGameModeBase::RespawnPlayer(AController* InController)
 {
     const auto RespawnComponent = InController->FindComponentByClass<USTURespawnComponent>();
 
-    if (RespawnComponent)
+    if (RespawnComponent && RoundCountDown > GameData.RespawnTime)
         RespawnComponent->Respawn(GameData.RespawnTime);
 }

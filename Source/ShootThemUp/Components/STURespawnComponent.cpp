@@ -20,6 +20,11 @@ int32 USTURespawnComponent::GetRespawnTimeRemaining() const
 	return RespawnCountDown;
 }
 
+bool USTURespawnComponent::IsRespawnInProgress() const
+{
+	return GetWorld()->GetTimerManager().IsTimerActive(RespawnTimerHandle);
+}
+
 void USTURespawnComponent::BeginPlay()
 {
 	Super::BeginPlay();	

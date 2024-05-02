@@ -21,6 +21,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	int32 GetRespawnTimeRemaining() const;
 
+	UFUNCTION(BlueprintCallable)
+	bool IsRespawnInProgress() const;
+
 protected:
 	virtual void BeginPlay() override;
 
