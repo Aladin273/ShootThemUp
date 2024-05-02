@@ -5,6 +5,7 @@
 #include "Player/STUBaseCharacter.h"
 #include "Player/STUPlayerController.h"
 #include "Player/STUPlayerState.h"
+#include "Components/STURespawnComponent.h"
 #include "UI/STUGameHUD.h"
 #include "AIController.h"
 
@@ -43,6 +44,11 @@ int32 ASTUGameModeBase::GetRoundTimeRemaining() const
     return RoundCountDown;
 }
 
+void ASTUGameModeBase::RespawnRequest(AController* Controller)
+{
+    ResetPlayer(Controller);
+}
+
 UClass* ASTUGameModeBase::GetDefaultPawnClassForController_Implementation(AController* InController)
 {
     if (InController && InController->IsA<AAIController>())
@@ -66,6 +72,8 @@ void ASTUGameModeBase::Killed(AController* Killer, AController* Victim)
         const auto PlayerState = Cast<ASTUPlayerState>(Victim->PlayerState);
         if (PlayerState) PlayerState->AddDeath();
     }
+
+    RespawnPlayer(Victim);
 }
 
 void ASTUGameModeBase::LogInfo()
@@ -149,7 +157,7 @@ void ASTUGameModeBase::SetPlayerColor(AController* InController)
 
 void ASTUGameModeBase::StartRound()
 {
-    RoundCountDown = GameData.RoundsTime;
+    RoundCountDown = GameData.RoundTime;
 
     GetWorldTimerManager().SetTimer(RoundTimerHandle, this, &ASTUGameModeBase::UpdateRound, 1.0f, true);
 
@@ -193,4 +201,12 @@ void ASTUGameModeBase::ResetPlayers()
     {
         ResetPlayer(Iterator->Get());
     }
+}
+
+void ASTUGameModeBase::RespawnPlayer(AController* InController)
+{
+    const auto RespawnComponent = InController->FindComponentByClass<USTURespawnComponent>();
+
+    if (RespawnComponent)
+        RespawnComponent->Respawn(GameData.RespawnTime);
 }

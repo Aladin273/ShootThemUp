@@ -15,18 +15,31 @@ class SHOOTTHEMUP_API ASTUPlayerState : public APlayerState
 	GENERATED_BODY()
 
 public:
+	UFUNCTION(BlueprintCallable)
 	int32 GetTeamID() const;
+	
+	UFUNCTION(BlueprintCallable)
 	const FLinearColor& GetTeamColor() const;
 
+	UFUNCTION(BlueprintCallable)
 	void SetTeamID(int32 ID);
+	
+	UFUNCTION(BlueprintCallable)
 	void SetTeamColor(const FLinearColor& Color);
 
+	UFUNCTION(BlueprintCallable)
 	void AddKill();
+	
+	UFUNCTION(BlueprintCallable)
 	void AddDeath();
 
+	UFUNCTION(BlueprintCallable)
 	int32 GetKillsNum() const;
+	
+	UFUNCTION(BlueprintCallable)
 	int32 GetDeathsNum() const;
 
+	UFUNCTION(BlueprintCallable)
 	void LogInfo() const;
 
 private:

@@ -21,7 +21,10 @@ struct FGameData
 	int32 RoundsNum = 4;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game", meta = (ClampMin = "1", ClampMax = "120"))
-	int32 RoundsTime = 30;
+	int32 RoundTime = 30;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game", meta = (ClampMin = "1", ClampMax = "120"))
+	int32 RespawnTime = 5;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game", meta = (ClampMin = "0"))
 	TArray<FLinearColor> TeamsInfo;
@@ -43,19 +46,22 @@ public:
 	virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
 
 public:
-	UFUNCTION(BlueprintCallable, Category = "Game")
+	UFUNCTION(BlueprintCallable)
 	int32 GetCurrentRoundNum() const;
 
-	UFUNCTION(BlueprintCallable, Category = "Game")
+	UFUNCTION(BlueprintCallable)
 	int32 GetTotalRoundsNum() const;
 
-	UFUNCTION(BlueprintCallable, Category = "Game")
+	UFUNCTION(BlueprintCallable)
 	int32 GetRoundTimeRemaining() const;
 
-	UFUNCTION(BlueprintCallable, Category = "Game")
+	UFUNCTION(BlueprintCallable)
+	virtual void RespawnRequest(AController* Controller);
+
+	UFUNCTION(BlueprintCallable)
 	virtual void Killed(AController* Killer, AController* Victim);
 
-	UFUNCTION(BlueprintCallable, Category = "Game")
+	UFUNCTION(BlueprintCallable)
 	virtual void LogInfo();
 
 protected:
@@ -80,7 +86,10 @@ private:
 	void ResetPlayer(AController* InController);
 	void ResetPlayers();
 
+	void RespawnPlayer(AController* InController);
+
 	int32 CurrentRound = 1;
+
 	int32 RoundCountDown = 0;
 	FTimerHandle RoundTimerHandle;
 };
