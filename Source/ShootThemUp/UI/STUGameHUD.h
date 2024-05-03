@@ -16,4 +16,11 @@ class SHOOTTHEMUP_API ASTUGameHUD : public AHUD
 
 public:
 	virtual void DrawHUD() override;
+
+protected:
+	virtual void BeginPlay() override;
+
+private:
+	UFUNCTION()
+	virtual void OnMatchStateChanged(ESTUMatchState State);
 };

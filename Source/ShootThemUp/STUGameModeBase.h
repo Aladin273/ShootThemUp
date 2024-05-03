@@ -9,6 +9,15 @@
 class APawn;
 class AAIController;
 
+UENUM(BlueprintType)
+enum class ESTUMatchState : uint8
+{
+	WaitingToStart = 0,
+	InProgress,
+	Pause,
+	GameOver
+};
+
 USTRUCT(BlueprintType)
 struct FGameData
 {
@@ -29,6 +38,8 @@ struct FGameData
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game", meta = (ClampMin = "0"))
 	TArray<FLinearColor> TeamsInfo;
 };
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMatchStateChangedSignature, ESTUMatchState, MatchState);
 
 UCLASS()
 class SHOOTTHEMUP_API ASTUGameModeBase : public AGameModeBase
@@ -61,6 +72,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Game")
 	virtual void LogInfo();
 
+public:
+	FOnMatchStateChangedSignature OnMatchStateChanged;
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game")
 	TSubclassOf<AAIController> AIControllerClass;
@@ -87,6 +101,10 @@ private:
 
 	void GameOver();
 
+	void SetMatchState(ESTUMatchState State);
+	
+	ESTUMatchState MatchState = ESTUMatchState::WaitingToStart;
+	
 	int32 CurrentRound = 1;
 
 	int32 RoundCountDown = 0;
