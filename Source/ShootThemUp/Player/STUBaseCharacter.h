@@ -6,10 +6,6 @@
 #include "GameFramework/Character.h"
 #include "STUBaseCharacter.generated.h"
 
-class USpringArmComponent;
-class UCameraComponent;
-class UTextRenderComponent;
-
 class USTUCharacterMovementComponent;
 class USTUHealthComponent;
 class USTUWeaponComponent;
@@ -24,24 +20,18 @@ public:
 	ASTUBaseCharacter(const FObjectInitializer& ObjInit);
 
 	UFUNCTION(BlueprintCallable)
-	virtual FVector GetInputVelocity() const;
+	void SetPlayerColor(const FLinearColor& Color);
+
+	UFUNCTION(BlueprintCallable)
+    virtual FVector GetMovementInput() const;
+
+	UFUNCTION(BlueprintCallable)
+    virtual FRotator GetRotationInput() const;
 
 	UFUNCTION(BlueprintCallable)
 	virtual FVector GetRelativeVelocity() const;
 
-	UFUNCTION(BlueprintCallable)
-	void SetPlayerColor(const FLinearColor& Color);
-
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
-	USpringArmComponent* SpringArmComponent;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
-	UCameraComponent* CameraComponent;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
-	UCameraComponent* CameraComponentFP;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	USTUHealthComponent* HealthComponent;
 
@@ -77,9 +67,6 @@ protected:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
 protected:
 	UFUNCTION(BlueprintCallable)
 	virtual void OnDeath();
@@ -93,21 +80,7 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	virtual void OnMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 
-private:
-	void MoveForward(float Amount);
-	void MoveRight(float Amount);
-
-	void LookUp(float Amount);
-	void LookAround(float Amount);
-
-	void StartRunning();
-	void StopRunning();
-
-	void StartFire();
-    void StopFire();
-	
-	void ToggleView();
-
-	FVector InputVelocity = FVector::ZeroVector;
+protected:
+	FVector MovementInput = FVector::ZeroVector;
 	USTUCharacterMovementComponent* CharacterMovementComponent = nullptr;
 };

@@ -19,6 +19,7 @@ class SHOOTTHEMUP_API ASTUAICharacter : public ASTUBaseCharacter
 public:
 	ASTUAICharacter(const FObjectInitializer& ObjInit);
 
+	UFUNCTION(BlueprintCallable)
 	UBehaviorTree* GetBehaviorTreeAsset() const;
 
 protected:

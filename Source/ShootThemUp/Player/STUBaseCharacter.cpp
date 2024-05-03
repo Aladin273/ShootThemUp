@@ -2,10 +2,7 @@
 
 #include "STUBaseCharacter.h"
 
-#include "GameFramework/SpringArmComponent.h"
-#include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Components/TextRenderComponent.h"
 
 #include "../Components/STUCharacterMovementComponent.h"
 #include "../Components/STUHealthComponent.h"
@@ -18,29 +15,10 @@ ASTUBaseCharacter::ASTUBaseCharacter(const FObjectInitializer& ObjInit)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>("SpringArmComponent");
-	SpringArmComponent->SetupAttachment(GetRootComponent());
-
-	CameraComponent = CreateDefaultSubobject<UCameraComponent>("CameraComponent");
-	CameraComponent->SetupAttachment(SpringArmComponent);
-
-	CameraComponentFP = CreateDefaultSubobject<UCameraComponent>("CameraComponentFP");
-	CameraComponentFP->SetupAttachment(GetMesh(), "HeadSocket");
-
 	HealthComponent = CreateDefaultSubobject<USTUHealthComponent>("HealthComponent");
 	WeaponComponent = CreateDefaultSubobject<USTUWeaponComponent>("WeaponComponent");
 
 	CharacterMovementComponent = Cast<USTUCharacterMovementComponent>(GetCharacterMovement());
-}
-
-FVector ASTUBaseCharacter::GetInputVelocity() const
-{
-	return InputVelocity;
-}
-
-FVector ASTUBaseCharacter::GetRelativeVelocity() const
-{
-	return GetActorRotation().UnrotateVector(GetVelocity());
 }
 
 void ASTUBaseCharacter::SetPlayerColor(const FLinearColor& Color)
@@ -53,12 +31,25 @@ void ASTUBaseCharacter::SetPlayerColor(const FLinearColor& Color)
 	}
 }
 
+FVector ASTUBaseCharacter::GetMovementInput() const
+{
+	return MovementInput;
+}
+
+FRotator ASTUBaseCharacter::GetRotationInput() const
+{
+	APlayerController* PlayerController = Cast<APlayerController>(Controller);
+	return PlayerController ? PlayerController->RotationInput : FRotator::ZeroRotator;
+}
+
+FVector ASTUBaseCharacter::GetRelativeVelocity() const
+{
+	return GetActorRotation().UnrotateVector(GetVelocity());
+}
+
 void ASTUBaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	CameraComponent->SetActive(true);
-	CameraComponentFP->SetActive(false);
 
 	OnHealthChanged(HealthComponent->GetHealth(), 0.f, HealthComponent->GetMaxHealth());
 
@@ -73,30 +64,6 @@ void ASTUBaseCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void ASTUBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	PlayerInputComponent->BindAxis("MoveForward", this, &ASTUBaseCharacter::MoveForward);
-	PlayerInputComponent->BindAxis("MoveRight", this, &ASTUBaseCharacter::MoveRight);
-
-	PlayerInputComponent->BindAxis("LookUp", this, &ASTUBaseCharacter::LookUp);
-	PlayerInputComponent->BindAxis("LookAround", this, &ASTUBaseCharacter::LookAround);
-
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ASTUBaseCharacter::Jump);
-
-	PlayerInputComponent->BindAction("Run", IE_Pressed, this, &ASTUBaseCharacter::StartRunning);
-	PlayerInputComponent->BindAction("Run", IE_Released, this, &ASTUBaseCharacter::StopRunning);
-
-	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ASTUBaseCharacter::StartFire);
-	PlayerInputComponent->BindAction("Fire", IE_Released, this, &ASTUBaseCharacter::StopFire);
-
-	PlayerInputComponent->BindAction("NextWeapon", IE_Pressed, WeaponComponent, &USTUWeaponComponent::NextWeapon);
-	PlayerInputComponent->BindAction("Reload", IE_Pressed, WeaponComponent, &USTUWeaponComponent::Reload);
-
-	PlayerInputComponent->BindAction("ToggleView", IE_Pressed, this, &ASTUBaseCharacter::ToggleView);
-}
-
 void ASTUBaseCharacter::OnDeath()
 {
 	PlayAnimMontage(DeathAnimMontage);
@@ -108,8 +75,6 @@ void ASTUBaseCharacter::OnDeath()
 
 	GetCharacterMovement()->SetMovementMode(MOVE_None);
 	SetLifeSpan(DeathLifeSpan);
-
-	Controller->ChangeState(NAME_Spectating);
 
 	UE_LOG(LogBaseCharacter, Error, TEXT("Is Dead"));
 }
@@ -150,69 +115,3 @@ void ASTUBaseCharacter::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 	// Possible Override
 }
 
-void ASTUBaseCharacter::MoveForward(float Amount)
-{
-	InputVelocity.X = Amount;
-	AddMovementInput(GetActorForwardVector(), Amount);
-
-	if (CharacterMovementComponent->IsRunning() && WeaponComponent->IsFiring())
-		WeaponComponent->StopFire();
-}
-
-void ASTUBaseCharacter::MoveRight(float Amount)
-{
-	InputVelocity.Y = Amount;
-	AddMovementInput(GetActorRightVector(), Amount);
-
-	if (CharacterMovementComponent->IsRunning() && WeaponComponent->IsFiring())
-		WeaponComponent->StopFire();
-}
-
-void ASTUBaseCharacter::LookUp(float Amount)
-{
-	AddControllerPitchInput(Amount);
-}
-
-void ASTUBaseCharacter::LookAround(float Amount)
-{
-	AddControllerYawInput(Amount);
-}
-
-void ASTUBaseCharacter::StartRunning()
-{	
-	CharacterMovementComponent->StartRunning();
-
-	if (CharacterMovementComponent->IsRunning())
-		WeaponComponent->StopFire();
-}
-
-void ASTUBaseCharacter::StopRunning()
-{
-	CharacterMovementComponent->StopRunning();
-}
-
-void ASTUBaseCharacter::StartFire()
-{
-	if (!CharacterMovementComponent->IsRunning())
-		WeaponComponent->StartFire();
-}
-
-void ASTUBaseCharacter::StopFire()
-{
-	WeaponComponent->StopFire();
-}
-
-void ASTUBaseCharacter::ToggleView()
-{
-	CameraComponent->ToggleActive();
-	CameraComponentFP->ToggleActive();
-
-	if (CameraComponentFP->IsActive()) 
-	{
-		GetMesh()->HideBoneByName("b_head", EPhysBodyOp::PBO_None);
-	}
-	else
-	{
-		GetMesh()->UnHideBoneByName("b_head");
-	}
-}
