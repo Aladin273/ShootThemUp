@@ -4,6 +4,7 @@
 #include "STUGameHUD.h"
 
 #include "Engine/Canvas.h"
+#include "Blueprint/UserWidget.h"
 
 #include "../STUGameModeBase.h"
 
@@ -25,6 +26,20 @@ void ASTUGameHUD::BeginPlay()
 {
     Super::BeginPlay();
 
+    Widgets.Add(ESTUMatchState::InProgress, CreateWidget<UUserWidget>(GetWorld(), PlayerWidgetClass));
+    Widgets.Add(ESTUMatchState::Pause, CreateWidget<UUserWidget>(GetWorld(), PauseWidgetClass));
+
+    for (auto WidgetPair : Widgets)
+    {
+        const auto Widget = WidgetPair.Value;
+
+        if (Widget)
+        {
+            Widget->AddToViewport();
+            Widget->SetVisibility(ESlateVisibility::Hidden);
+        }
+    }
+
     if (GetWorld())
     {
         const auto GameMode = Cast<ASTUGameModeBase>(GetWorld()->GetAuthGameMode());
@@ -36,5 +51,20 @@ void ASTUGameHUD::BeginPlay()
 
 void ASTUGameHUD::OnMatchStateChanged(ESTUMatchState State)
 {
+    if (CurrentWidget)
+    {
+        CurrentWidget->SetVisibility(ESlateVisibility::Hidden);
+    }
+
+    if (Widgets.Contains(State))
+    {
+        CurrentWidget = Widgets[State];
+    }
+
+    if (CurrentWidget)
+    {
+        CurrentWidget->SetVisibility(ESlateVisibility::Visible);
+    }
+
     UE_LOG(LogGameHUD, Display, TEXT("Match state changed: %s"), *UEnum::GetValueAsString(State));
 }

@@ -32,6 +32,30 @@ void ASTUGameModeBase::StartPlay()
     SetMatchState(ESTUMatchState::InProgress);
 }
 
+bool ASTUGameModeBase::SetPause(APlayerController* PC, FCanUnpause CanUnpauseDelegate /*= FCanUnpause()*/)
+{
+    bool bPauseSet = Super::SetPause(PC, CanUnpauseDelegate);
+
+    if (bPauseSet)
+    {
+        SetMatchState(ESTUMatchState::Pause);
+    }
+
+    return bPauseSet;
+}
+
+bool ASTUGameModeBase::ClearPause()
+{
+    bool bPauseCleared = Super::ClearPause();
+
+    if (bPauseCleared)
+    {
+        SetMatchState(ESTUMatchState::InProgress);
+    }
+
+    return bPauseCleared;
+}
+
 int32 ASTUGameModeBase::GetCurrentRoundNum() const
 {
     return CurrentRound;

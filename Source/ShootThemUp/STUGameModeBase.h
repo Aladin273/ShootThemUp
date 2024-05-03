@@ -53,6 +53,10 @@ public:
 
 	virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
 
+	virtual bool SetPause(APlayerController* PC, FCanUnpause CanUnpauseDelegate = FCanUnpause()) override;
+
+	virtual bool ClearPause() override;
+
 public:
 	UFUNCTION(BlueprintCallable, Category = "Game")
 	int32 GetCurrentRoundNum() const;

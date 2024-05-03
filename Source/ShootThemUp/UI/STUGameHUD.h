@@ -6,6 +6,8 @@
 #include "GameFramework/HUD.h"
 #include "STUGameHUD.generated.h"
 
+enum class ESTUMatchState : uint8;
+
 /**
  * 
  */
@@ -18,9 +20,23 @@ public:
 	virtual void DrawHUD() override;
 
 protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<UUserWidget> PlayerWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<UUserWidget> PauseWidgetClass;
+
+protected:
 	virtual void BeginPlay() override;
 
-private:
+protected:
 	UFUNCTION()
 	virtual void OnMatchStateChanged(ESTUMatchState State);
+
+private:
+	UPROPERTY()
+	UUserWidget* CurrentWidget = nullptr;
+
+	UPROPERTY()
+	TMap<ESTUMatchState, UUserWidget*> Widgets;
 };

@@ -22,4 +22,17 @@ public:
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	USTURespawnComponent* RespawnComponent;
+
+protected:
+	virtual void BeginPlay() override;
+	
+	virtual void SetupInputComponent() override;
+
+protected:
+	UFUNCTION()
+	virtual void OnMatchStateChanged(ESTUMatchState State);
+
+private:
+	UFUNCTION()
+	void OnPauseGame();
 };
