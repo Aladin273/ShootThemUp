@@ -44,5 +44,8 @@ protected:
 
 private:
 	UFUNCTION()
+	void OnNewPawn(APawn* Pawn);
+
+	UFUNCTION()
 	void OnHealthChanged(float Health, float HealthDelta, float MaxHealth);
 };

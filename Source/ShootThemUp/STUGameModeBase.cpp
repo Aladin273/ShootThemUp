@@ -9,6 +9,8 @@
 #include "UI/STUGameHUD.h"
 #include "AIController.h"
 
+#include "EngineUtils.h"
+
 DEFINE_LOG_CATEGORY_STATIC(LogGameModeBase, All, All)
 
 ASTUGameModeBase::ASTUGameModeBase()
@@ -177,9 +179,7 @@ void ASTUGameModeBase::UpdateRound()
         }
         else
         {
-            UE_LOG(LogGameModeBase, Display, TEXT("--------- Stats ---------"));
-            LogInfo();
-            UE_LOG(LogGameModeBase, Display, TEXT("--------- GameOver ---------"));
+            GameOver();
         }
     }
 }
@@ -209,4 +209,17 @@ void ASTUGameModeBase::RespawnPlayer(AController* InController)
 
     if (RespawnComponent && RoundCountDown > GameData.RespawnTime)
         RespawnComponent->Respawn(GameData.RespawnTime);
+}
+
+void ASTUGameModeBase::GameOver()
+{
+    UE_LOG(LogGameModeBase, Display, TEXT("--------- Stats ---------"));
+    LogInfo();
+    UE_LOG(LogGameModeBase, Display, TEXT("--------- GameOver ---------"));
+
+    for (auto Pawn : TActorRange<APawn>(GetWorld()))
+    {
+        Pawn->TurnOff();
+        Pawn->DisableInput(nullptr);
+    }
 }

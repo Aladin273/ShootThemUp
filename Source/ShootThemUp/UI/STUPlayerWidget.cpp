@@ -40,12 +40,21 @@ bool USTUPlayerWidget::IsPlayerSpectating() const
 
 bool USTUPlayerWidget::Initialize()
 {
-    const auto HealthComponent = STUUtils::GetSTUPlayerComponent<USTUHealthComponent>(GetOwningPlayerPawn());
-
-    if (HealthComponent)
-        HealthComponent->OnHealthChanged.AddDynamic(this, &USTUPlayerWidget::OnHealthChanged);
+    if (GetOwningPlayer())
+    {
+        GetOwningPlayer()->GetOnNewPawnNotifier().AddUObject(this, &USTUPlayerWidget::OnNewPawn);
+        OnNewPawn(GetOwningPlayerPawn());
+    }
 
     return Super::Initialize();
+}
+
+void USTUPlayerWidget::OnNewPawn(APawn* Pawn)
+{
+    const auto HealthComponent = STUUtils::GetSTUPlayerComponent<USTUHealthComponent>(Pawn);
+
+    if (HealthComponent /*&& !HealthComponent->OnHealthChanged.IsBoundToObject(this)*/)
+        HealthComponent->OnHealthChanged.AddDynamic(this, &USTUPlayerWidget::OnHealthChanged);
 }
 
 void USTUPlayerWidget::OnHealthChanged(float Health, float HealthDelta, float MaxHealth)
