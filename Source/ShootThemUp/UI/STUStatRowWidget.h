@@ -15,10 +15,19 @@ class SHOOTTHEMUP_API USTUStatRowWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
+	UFUNCTION(BlueprintCallable)
 	void SetName(const FText& Text);
+	
+	UFUNCTION(BlueprintCallable)
 	void SetKills(const FText& Text);
+	
+	UFUNCTION(BlueprintCallable)
 	void SetDeaths(const FText& Text);
+	
+	UFUNCTION(BlueprintCallable)
 	void SetTeam(const FText& Text);
+	
+	UFUNCTION(BlueprintCallable)
 	void SetIndicator(bool bVisible);
 
 protected:

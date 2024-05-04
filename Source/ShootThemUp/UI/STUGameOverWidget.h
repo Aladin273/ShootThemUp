@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "STUGameOverWidget.generated.h"
 
+class UButton;
 class UVerticalBox;
 enum class ESTUMatchState : uint8;
 
@@ -14,17 +15,24 @@ class SHOOTTHEMUP_API USTUGameOverWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
-public:
-	virtual bool Initialize() override;
-
 protected:
+	UPROPERTY(meta = (BindWidget))
+	UButton* B_Restart;
+
 	UPROPERTY(meta = (BindWidget))
 	UVerticalBox* VB_StatBox;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<UUserWidget> StatRowWidgetClass;
 
+protected:
+	virtual void NativeOnInitialized() override;
+
+protected:
+	UFUNCTION()
+	void OnMatchStateChanged(ESTUMatchState State);	
+
 private:
 	UFUNCTION()
-	void OnMatchStateChanged(ESTUMatchState State);
+	void OnRestart();
 };
