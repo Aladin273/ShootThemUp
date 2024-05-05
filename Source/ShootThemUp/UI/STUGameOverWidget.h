@@ -20,6 +20,9 @@ protected:
 	UButton* B_Restart;
 
 	UPROPERTY(meta = (BindWidget))
+	UButton* B_MainMenu;
+
+	UPROPERTY(meta = (BindWidget))
 	UVerticalBox* VB_StatBox;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
@@ -35,4 +38,7 @@ protected:
 private:
 	UFUNCTION()
 	void OnRestart();
+
+	UFUNCTION()
+	void OnMainMenu();
 };

@@ -11,6 +11,7 @@
 #include "../UI/STUStatRowWidget.h"
 
 #include "Kismet/GameplayStatics.h"
+#include "../STUGameInstance.h"
 
 void USTUGameOverWidget::NativeOnInitialized()
 {
@@ -26,6 +27,10 @@ void USTUGameOverWidget::NativeOnInitialized()
 
     if (B_Restart)
         B_Restart->OnClicked.AddDynamic(this, &USTUGameOverWidget::OnRestart);
+
+
+    if (B_MainMenu)
+        B_MainMenu->OnClicked.AddDynamic(this, &USTUGameOverWidget::OnMainMenu);
 }
 
 void USTUGameOverWidget::OnMatchStateChanged(ESTUMatchState State)
@@ -68,4 +73,14 @@ void USTUGameOverWidget::OnMatchStateChanged(ESTUMatchState State)
 void USTUGameOverWidget::OnRestart()
 {
     UGameplayStatics::OpenLevel(GetWorld(), FName(UGameplayStatics::GetCurrentLevelName(GetWorld())));
+}
+
+void USTUGameOverWidget::OnMainMenu()
+{
+    const auto GameInstance = GetWorld()->GetGameInstance<USTUGameInstance>();
+
+    if (GameInstance && !GameInstance->GetMenuLevelName().IsNone())
+    {
+        UGameplayStatics::OpenLevel(this, GameInstance->GetMenuLevelName());
+    }
 }
