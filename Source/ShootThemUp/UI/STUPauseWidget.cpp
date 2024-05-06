@@ -32,8 +32,8 @@ void USTUPauseWidget::OnMainMenu()
 {
     const auto GameInstance = GetWorld()->GetGameInstance<USTUGameInstance>();
 
-    if (GameInstance && !GameInstance->GetMenuLevelName().IsNone())
+    if (GameInstance && !GameInstance->GetMenuLevel().LevelName.IsNone())
     {
-        UGameplayStatics::OpenLevel(this, GameInstance->GetMenuLevelName());
+        UGameplayStatics::OpenLevel(this, GameInstance->GetMenuLevel().LevelName);
     }
 }

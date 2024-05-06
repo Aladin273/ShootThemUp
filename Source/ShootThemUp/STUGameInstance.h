@@ -6,9 +6,21 @@
 #include "Engine/GameInstance.h"
 #include "STUGameInstance.generated.h"
 
-/**
- * 
- */
+USTRUCT(BlueprintType)
+struct FLevelData
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game")
+	FName LevelName = NAME_None;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game")
+	FName LevelDisplayName = NAME_None;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game")
+	UTexture2D* LevelThumbnail;
+};
+
 UCLASS()
 class SHOOTTHEMUP_API USTUGameInstance : public UGameInstance
 {
@@ -16,15 +28,24 @@ class SHOOTTHEMUP_API USTUGameInstance : public UGameInstance
 
 public:
 	UFUNCTION(BlueprintCallable)
-	FName GetMenuLevelName() const { return MenuLevelName; };
+	TArray<FLevelData> GetLevelsData() const { return LevelsData; };
 
 	UFUNCTION(BlueprintCallable)
-	FName GetStartupLevelName() const { return StartupLevelName; };
+	FLevelData GetMenuLevel() const { return MenuLevel; };
+
+	UFUNCTION(BlueprintCallable)
+	FLevelData GetStartupLevel() const { return StartupLevel; };
+
+	UFUNCTION(BlueprintCallable)
+	void SetStartupLevel(FLevelData LevelData) { StartupLevel = LevelData; };
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game")
-	FName MenuLevelName = NAME_None;
+	FLevelData MenuLevel;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game")
-	FName StartupLevelName = NAME_None;
+	TArray<FLevelData> LevelsData;
+
+private:
+	FLevelData StartupLevel;
 };

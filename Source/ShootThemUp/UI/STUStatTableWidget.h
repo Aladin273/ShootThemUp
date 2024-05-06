@@ -15,7 +15,7 @@ class SHOOTTHEMUP_API USTUStatTableWidget : public UUserWidget
 
 public:
 	UFUNCTION(BlueprintCallable)
-	void Refresh();
+	void RefreshStats();
 
 protected:
 	UPROPERTY(meta = (BindWidget))

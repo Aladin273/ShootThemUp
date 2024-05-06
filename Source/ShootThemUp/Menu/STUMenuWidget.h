@@ -7,6 +7,8 @@
 #include "STUMenuWidget.generated.h"
 
 class UButton;
+class UHorizontalBox;
+class USTULevelItemWidget;
 
 /**
  * 
@@ -23,10 +25,22 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	UButton* B_QuitGame;
 
+	UPROPERTY(meta = (BindWidget))
+	UHorizontalBox* HB_LevelItems;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<UUserWidget> LevelItemWidgetClass;
+
 protected:
 	virtual void NativeOnInitialized() override;
 
 private:
+	UPROPERTY()
+	TArray<USTULevelItemWidget*> LevelItemWidgets;
+
+	UFUNCTION()
+	void OnLevelSelected(const FLevelData& Data);
+
 	UFUNCTION()
 	void OnStartGame();
 

@@ -8,7 +8,7 @@
 #include "../STUGameModeBase.h"
 #include "../Player/STUPlayerState.h"
 
-void USTUStatTableWidget::Refresh()
+void USTUStatTableWidget::RefreshStats()
 {
     if (GetWorld() && VB_StatBox)
     {
@@ -40,5 +40,5 @@ void USTUStatTableWidget::NativeOnInitialized()
 {
     Super::NativeOnInitialized();
 
-    Refresh();
+    RefreshStats();
 }
