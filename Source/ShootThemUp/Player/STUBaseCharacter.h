@@ -20,6 +20,9 @@ public:
 	ASTUBaseCharacter(const FObjectInitializer& ObjInit);
 
 	UFUNCTION(BlueprintCallable)
+	FLinearColor GetPlayerColor() const;
+
+	UFUNCTION(BlueprintCallable)
 	void SetPlayerColor(const FLinearColor& Color);
 
 	UFUNCTION(BlueprintCallable)
@@ -81,6 +84,7 @@ protected:
 	virtual void OnMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 
 protected:
+	FLinearColor PlayerColor;
 	FVector MovementInput = FVector::ZeroVector;
 	USTUCharacterMovementComponent* CharacterMovementComponent = nullptr;
 };

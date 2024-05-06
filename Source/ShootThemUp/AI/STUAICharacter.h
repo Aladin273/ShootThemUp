@@ -7,6 +7,7 @@
 #include "STUAICharacter.generated.h"
 
 class UBehaviorTree;
+class UWidgetComponent;
 
 /**
  * 
@@ -23,9 +24,13 @@ public:
 	UBehaviorTree* GetBehaviorTreeAsset() const;
 
 protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+	UWidgetComponent* HealthWidgetComponent;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
 	UBehaviorTree* BehaviorTreeAsset;
 
 protected:
 	virtual void OnDeath() override;
+	virtual void OnHealthChanged(float Health, float HealthDelta, float MaxHealth) override;
 };

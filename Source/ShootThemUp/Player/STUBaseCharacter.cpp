@@ -21,8 +21,15 @@ ASTUBaseCharacter::ASTUBaseCharacter(const FObjectInitializer& ObjInit)
 	CharacterMovementComponent = Cast<USTUCharacterMovementComponent>(GetCharacterMovement());
 }
 
+FLinearColor ASTUBaseCharacter::GetPlayerColor() const
+{
+	return PlayerColor;
+}
+
 void ASTUBaseCharacter::SetPlayerColor(const FLinearColor& Color)
 {
+	PlayerColor = Color;
+
 	const auto MaterialInst = GetMesh()->CreateAndSetMaterialInstanceDynamic(0);
 
 	if (MaterialInst)
