@@ -7,7 +7,7 @@
 #include "STUGameOverWidget.generated.h"
 
 class UButton;
-class UVerticalBox;
+class USTUStatTableWidget;
 enum class ESTUMatchState : uint8;
 
 UCLASS()
@@ -22,11 +22,8 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	UButton* B_MainMenu;
 
-	UPROPERTY(meta = (BindWidget))
-	UVerticalBox* VB_StatBox;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
-	TSubclassOf<UUserWidget> StatRowWidgetClass;
+    UPROPERTY(meta = (BindWidget))
+	USTUStatTableWidget* WBP_StatTable;
 
 protected:
 	virtual void NativeOnInitialized() override;
