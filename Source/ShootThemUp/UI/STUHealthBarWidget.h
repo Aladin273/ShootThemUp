@@ -18,6 +18,9 @@ class SHOOTTHEMUP_API USTUHealthBarWidget : public UUserWidget
 
 public:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+    float DurationVisibility = 1.5f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
     float PercentVisibility = 0.75f;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")

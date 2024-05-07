@@ -26,6 +26,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	void SetTeam(const FText& Text);
+
+	UFUNCTION(BlueprintCallable)
+	void SetTeamColor(const FLinearColor& Color);
 	
 	UFUNCTION(BlueprintCallable)
 	void SetIndicator(bool bVisible);
@@ -42,6 +45,9 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* T_Team;
+
+	UPROPERTY(meta = (BindWidget))
+	UImage* I_TeamColor;
 
 	UPROPERTY(meta = (BindWidget))
 	UImage* I_Indicator;

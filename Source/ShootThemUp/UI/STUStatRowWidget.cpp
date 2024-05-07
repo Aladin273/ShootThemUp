@@ -29,6 +29,12 @@ void USTUStatRowWidget::SetTeam(const FText& Text)
     T_Team->SetText(Text);
 }
 
+void USTUStatRowWidget::SetTeamColor(const FLinearColor& Color)
+{
+    if (!I_TeamColor) return;
+    I_TeamColor->SetColorAndOpacity(Color);
+}
+
 void USTUStatRowWidget::SetIndicator(bool bVisible)
 {
     if (!I_Indicator) return;

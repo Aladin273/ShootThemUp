@@ -25,7 +25,7 @@ ASTUAICharacter::ASTUAICharacter(const FObjectInitializer& ObjInit)
     }
 
     HealthWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("HealthWidgetComponent");
-    HealthWidgetComponent->SetupAttachment(GetRootComponent());
+    HealthWidgetComponent->SetupAttachment(GetMesh());
     HealthWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
     HealthWidgetComponent->SetDrawAtDesiredSize(true);
 }

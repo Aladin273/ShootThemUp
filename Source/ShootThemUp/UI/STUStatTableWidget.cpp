@@ -29,6 +29,7 @@ void USTUStatTableWidget::RefreshStats()
             StatRowWidget->SetKills(FText::FromString(FString::FromInt(PlayerState->GetKillsNum())));
             StatRowWidget->SetDeaths(FText::FromString(FString::FromInt(PlayerState->GetDeathsNum())));
             StatRowWidget->SetTeam(FText::FromString(FString::FromInt(PlayerState->GetTeamID())));
+            StatRowWidget->SetTeamColor(PlayerState->GetTeamColor());
             StatRowWidget->SetIndicator(Controller->IsPlayerController());
 
             VB_StatBox->AddChild(StatRowWidget);
