@@ -67,7 +67,7 @@ public:
 		Super::ApplySettings(bCheckForCommandLineOverrides);
 
 		UGameplayStatics::SetSoundMixClassOverride(this, MasterSoundMix, MusicSoundClass, MusicVolume, 1.0f, 0.0f);
-		UGameplayStatics::SetSoundMixClassOverride(this, MasterSoundMix, SFXSoundClass, SFXVolume, 1.0f, 0.0f);
+        UGameplayStatics::SetSoundMixClassOverride(this, MasterSoundMix, SFXSoundClass, SFXVolume, 1.0f, 0.0f);
 	}
 
 protected:
