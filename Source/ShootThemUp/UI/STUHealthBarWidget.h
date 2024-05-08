@@ -18,7 +18,7 @@ class SHOOTTHEMUP_API USTUHealthBarWidget : public UUserWidget
 
 public:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
-    float DurationVisibility = 1.5f;
+    float DurationVisibility = 0.5f;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
     float PercentVisibility = 0.75f;
@@ -48,4 +48,9 @@ public:
 protected:
 	UPROPERTY(meta = (BindWidget))
 	UProgressBar* PB_HealthBar;
+
+private:
+    void NearlyZeroDelay();
+
+    FTimerHandle DelayTimerHandle;
 };

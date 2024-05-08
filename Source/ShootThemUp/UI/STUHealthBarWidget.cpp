@@ -14,13 +14,7 @@ void USTUHealthBarWidget::SetHealthPercent(float Percent)
         if (FMath::IsNearlyZero(Percent))
         {
             PB_HealthBar->SetVisibility(ESlateVisibility::Visible);
-
-            FTimerHandle TimerHandle;
-            GetWorld()->GetTimerManager().SetTimer(TimerHandle, [&TimerHandle, this]
-                { 
-                    PB_HealthBar->SetVisibility(ESlateVisibility::Hidden); 
-                    GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
-                }, DurationVisibility, false);
+            GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, this, &USTUHealthBarWidget::NearlyZeroDelay, DurationVisibility, false);
         }
         else
         {
@@ -40,4 +34,10 @@ void USTUHealthBarWidget::SetHealthPercent(float Percent)
             PB_HealthBar->SetFillColorAndOpacity(ColorDefault);
         }
     }
+}
+
+void USTUHealthBarWidget::NearlyZeroDelay()
+{
+    PB_HealthBar->SetVisibility(ESlateVisibility::Hidden);
+    GetWorld()->GetTimerManager().ClearTimer(DelayTimerHandle);
 }
