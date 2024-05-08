@@ -59,6 +59,19 @@ void USTUMenuWidget::NativeOnInitialized()
     }
 }
 
+void USTUMenuWidget::OnAnimationFinished_Implementation(const UWidgetAnimation* Animation)
+{
+    if (Animation == HideAnimation)
+    {
+        const auto GameInstance = GetWorld()->GetGameInstance<USTUGameInstance>();
+
+        if (GameInstance)
+        {
+            UGameplayStatics::OpenLevel(this, GameInstance->GetStartupLevel().LevelName);
+        }
+    }
+}
+
 void USTUMenuWidget::OnLevelSelected(const FLevelData& Data)
 {
     const auto GameInstance = GetWorld()->GetGameInstance<USTUGameInstance>();
@@ -80,12 +93,7 @@ void USTUMenuWidget::OnLevelSelected(const FLevelData& Data)
 
 void USTUMenuWidget::OnStartGame()
 {
-    const auto GameInstance = GetWorld()->GetGameInstance<USTUGameInstance>();
-
-    if (GameInstance)
-    {
-        UGameplayStatics::OpenLevel(this, GameInstance->GetStartupLevel().LevelName);
-    }
+    PlayAnimation(HideAnimation);
 }
 
 void USTUMenuWidget::OnQuitGame()

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
+#include "STUBaseWidget.h"
 #include "STUGameOverWidget.generated.h"
 
 class UButton;
@@ -11,7 +11,7 @@ class USTUStatTableWidget;
 enum class ESTUMatchState : uint8;
 
 UCLASS()
-class SHOOTTHEMUP_API USTUGameOverWidget : public UUserWidget
+class SHOOTTHEMUP_API USTUGameOverWidget : public USTUBaseWidget
 {
 	GENERATED_BODY()
 

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
+#include "STUBaseWidget.h"
 #include "STUPlayerWidget.generated.h"
 
 struct FWeaponUIData;
@@ -13,7 +13,7 @@ struct FWeaponAmmoData;
  * 
  */
 UCLASS()
-class SHOOTTHEMUP_API USTUPlayerWidget : public UUserWidget
+class SHOOTTHEMUP_API USTUPlayerWidget : public USTUBaseWidget
 {
 	GENERATED_BODY()
 
@@ -33,11 +33,18 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	bool IsPlayerSpectating() const;
 
-	UFUNCTION(BlueprintImplementableEvent, Category = "UI")
+	UFUNCTION(BlueprintNativeEvent, Category = "UI")
 	void OnTakeDamage();
 
-	UFUNCTION(BlueprintImplementableEvent, Category = "UI")
+	UFUNCTION(BlueprintNativeEvent, Category = "UI")
 	void OnTakeHeal();
+
+protected:
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	UWidgetAnimation* DamageAnimation;
+
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	UWidgetAnimation* HealAnimation;
 
 protected:
 	virtual void NativeOnInitialized() override;

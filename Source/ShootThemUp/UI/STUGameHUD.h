@@ -6,6 +6,7 @@
 #include "GameFramework/HUD.h"
 #include "STUGameHUD.generated.h"
 
+class USTUBaseWidget;
 enum class ESTUMatchState : uint8;
 
 /**
@@ -38,8 +39,8 @@ protected:
 
 private:
 	UPROPERTY()
-	UUserWidget* CurrentWidget = nullptr;
+	USTUBaseWidget* CurrentWidget = nullptr;
 
 	UPROPERTY()
-	TMap<ESTUMatchState, UUserWidget*> Widgets;
+	TMap<ESTUMatchState, USTUBaseWidget*> Widgets;
 };

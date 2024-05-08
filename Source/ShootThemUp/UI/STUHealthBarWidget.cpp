@@ -16,7 +16,11 @@ void USTUHealthBarWidget::SetHealthPercent(float Percent)
             PB_HealthBar->SetVisibility(ESlateVisibility::Visible);
 
             FTimerHandle TimerHandle;
-            GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]{ PB_HealthBar->SetVisibility(ESlateVisibility::Hidden); }, DurationVisibility, false);
+            GetWorld()->GetTimerManager().SetTimer(TimerHandle, [&TimerHandle, this]
+                { 
+                    PB_HealthBar->SetVisibility(ESlateVisibility::Hidden); 
+                    GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
+                }, DurationVisibility, false);
         }
         else
         {

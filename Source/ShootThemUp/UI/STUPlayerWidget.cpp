@@ -38,6 +38,22 @@ bool USTUPlayerWidget::IsPlayerSpectating() const
     return Controller && Controller->GetStateName() == NAME_Spectating;
 }
 
+void USTUPlayerWidget::OnTakeDamage_Implementation()
+{
+    if (!IsAnimationPlaying(DamageAnimation))
+    {
+        PlayAnimation(DamageAnimation);
+    }
+}
+
+void USTUPlayerWidget::OnTakeHeal_Implementation()
+{
+    if (!IsAnimationPlaying(HealAnimation))
+    {
+        PlayAnimation(HealAnimation);
+    }
+}
+
 void USTUPlayerWidget::NativeOnInitialized()
 {
     Super::NativeOnInitialized();
