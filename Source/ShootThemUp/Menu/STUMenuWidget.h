@@ -33,6 +33,9 @@ protected:
 
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
 	UWidgetAnimation* HideAnimation;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
+	USoundCue* StartGameSound;
 
 protected:
 	virtual void NativeOnInitialized() override;
