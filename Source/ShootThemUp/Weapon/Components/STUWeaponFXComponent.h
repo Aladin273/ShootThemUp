@@ -8,6 +8,7 @@
 
 class UNiagaraSystem;
 class UPhysicalMaterial;
+class USoundCue;
 
 USTRUCT(BlueprintType)
 struct FDecalData
@@ -37,6 +38,9 @@ struct FImpactData
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VFX")
 	UNiagaraSystem* NiagaraEffect;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VFX")
+	USoundCue* SoundEffect;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VFX")
 	FDecalData DecalData;

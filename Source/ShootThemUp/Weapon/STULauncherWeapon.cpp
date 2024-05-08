@@ -1,8 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "STULauncherWeapon.h"
-
 #include "STUProjectile.h"
+
+#include "Sound/SoundCue.h"
+#include "Kismet/GameplayStatics.h"
 
 ASTULauncherWeapon::ASTULauncherWeapon()
 {
@@ -35,6 +37,8 @@ void ASTULauncherWeapon::MakeShot()
 
 	if (IsClipEmpty() || !GetTraceData(TraceStart, TraceEnd))
 	{
+		UGameplayStatics::SpawnSoundAttached(NoAmmoSound, WeaponMesh, MuzzleSocket);
+
 		if (!IsAmmoEmpty())
 			OnEmptyClip.Broadcast(this);
 
@@ -67,5 +71,7 @@ void ASTULauncherWeapon::MakeShot()
 	
 	SpawnMuzzleFX();
 	
+	UGameplayStatics::SpawnSoundAttached(FireSound, WeaponMesh, MuzzleSocket);
+
 	DecreaseAmmo();	
 }

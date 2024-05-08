@@ -8,6 +8,7 @@
 
 class APawn;
 class AAIController;
+class USoundCue;
 
 UENUM(BlueprintType)
 enum class ESTUMatchState : uint8
@@ -32,7 +33,10 @@ struct FGameData
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game", meta = (ClampMin = "1", ClampMax = "120"))
 	int32 RoundTime = 30;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game", meta = (ClampMin = "1", ClampMax = "30"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game")
+	bool bAllowRespawn = true;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game", meta = (ClampMin = "1", ClampMax = "30", EditCondition = "bAllowRespawn"))
 	int32 RespawnTime = 3;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game", meta = (ClampMin = "0"))
@@ -88,6 +92,12 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game")
 	FGameData GameData;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game")
+	USoundCue* PlayerDeathSound;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game")
+	USoundCue* PlayerRespawnSound;
 
 private:
 	void SpawnBots();

@@ -4,6 +4,9 @@
 
 #include "Components/CapsuleComponent.h"
 
+#include "Sound/SoundCue.h"
+#include "Kismet/GameplayStatics.h"
+
 #include "../Components/STUCharacterMovementComponent.h"
 #include "../Components/STUHealthComponent.h"
 #include "../Components/STUWeaponComponent.h"
@@ -82,6 +85,8 @@ void ASTUBaseCharacter::OnDeath()
 
 	GetCharacterMovement()->SetMovementMode(MOVE_None);
 	SetLifeSpan(DeathLifeSpan);
+
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DeathSound, GetActorLocation());
 
 	UE_LOG(LogBaseCharacter, Error, TEXT("Is Dead"));
 }

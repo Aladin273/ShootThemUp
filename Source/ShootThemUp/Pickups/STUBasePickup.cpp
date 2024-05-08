@@ -4,6 +4,9 @@
 
 #include "Components/SphereComponent.h"
 
+#include "Sound/SoundCue.h"
+#include "Kismet/GameplayStatics.h"
+
 DEFINE_LOG_CATEGORY_STATIC(LogBasePickup, All, All);
 
 // Sets default values
@@ -59,6 +62,8 @@ void ASTUBasePickup::PickupWasTaken()
 	CollisionComponent->SetVisibility(false, true);
 
 	GetWorldTimerManager().SetTimer(RespawnTimerHandle, this, &ASTUBasePickup::Respawn, RespawnTime);
+
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), TakenSound, GetActorLocation());
 }
 
 void ASTUBasePickup::Respawn()

@@ -7,6 +7,9 @@
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 
+#include "Sound/SoundCue.h"
+#include "Kismet/GameplayStatics.h"
+
 ASTURifleWeapon::ASTURifleWeapon()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -76,6 +79,8 @@ void ASTURifleWeapon::MakeShot()
 	
 	if (IsClipEmpty() || !GetTraceData(TraceStart, TraceEnd))
 	{
+		UGameplayStatics::SpawnSoundAttached(NoAmmoSound, WeaponMesh, MuzzleSocket);
+		
 		if (!IsAmmoEmpty())
 			OnEmptyClip.Broadcast(this);
 
@@ -101,6 +106,8 @@ void ASTURifleWeapon::MakeShot()
 	
 	SpawnMuzzleFX();
 	SpawnTraceFX(GetMuzzleWorldLocation(), EndPoint);
+
+	UGameplayStatics::SpawnSoundAttached(FireSound, WeaponMesh, MuzzleSocket);
 
 	DecreaseAmmo();
 }

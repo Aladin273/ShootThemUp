@@ -63,7 +63,7 @@ void USTUMenuWidget::NativeOnInitialized()
 
 void USTUMenuWidget::OnAnimationFinished_Implementation(const UWidgetAnimation* Animation)
 {
-    if (Animation == HideAnimation)
+    if (Animation == LoadingAnimation)
     {
         const auto GameInstance = GetWorld()->GetGameInstance<USTUGameInstance>();
 
@@ -95,8 +95,7 @@ void USTUMenuWidget::OnLevelSelected(const FLevelData& Data)
 
 void USTUMenuWidget::OnStartGame()
 {
-    PlayAnimation(HideAnimation);
-    UGameplayStatics::PlaySound2D(GetWorld(), StartGameSound);
+    PlayAnimation(LoadingAnimation);
 }
 
 void USTUMenuWidget::OnQuitGame()

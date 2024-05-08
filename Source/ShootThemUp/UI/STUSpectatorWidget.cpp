@@ -4,6 +4,7 @@
 #include "STUSpectatorWidget.h"
 
 #include "../Components/STURespawnComponent.h"
+#include "../STUGameModeBase.h"
 
 bool USTUSpectatorWidget::GetRespawnTimeRemaining(int32& CountDown)
 {
@@ -13,6 +14,16 @@ bool USTUSpectatorWidget::GetRespawnTimeRemaining(int32& CountDown)
     {
         CountDown = RespawnComponent->GetRespawnTimeRemaining();
         return true;
+    }
+    else
+    {
+        const auto GameMode = GetWorld()->GetAuthGameMode<ASTUGameModeBase>();
+
+        if (GameMode)
+        {
+            CountDown = GameMode->GetRoundTimeRemaining();
+            return true;
+        }
     }
 
     return false;

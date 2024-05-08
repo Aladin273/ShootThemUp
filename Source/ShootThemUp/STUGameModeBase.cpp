@@ -11,6 +11,9 @@
 
 #include "EngineUtils.h"
 
+#include "Sound/SoundCue.h"
+#include "Kismet/GameplayStatics.h"
+
 DEFINE_LOG_CATEGORY_STATIC(LogGameModeBase, All, All)
 
 ASTUGameModeBase::ASTUGameModeBase()
@@ -74,6 +77,9 @@ int32 ASTUGameModeBase::GetRoundTimeRemaining() const
 void ASTUGameModeBase::RespawnRequest(AController* Controller)
 {
     ResetPlayer(Controller);
+
+    if (Controller->IsPlayerController())
+        UGameplayStatics::PlaySound2D(GetWorld(), PlayerRespawnSound);
 }
 
 UClass* ASTUGameModeBase::GetDefaultPawnClassForController_Implementation(AController* InController)
@@ -101,6 +107,9 @@ void ASTUGameModeBase::Killed(AController* Killer, AController* Victim)
     }
 
     RespawnPlayer(Victim);
+
+    if (Victim->IsPlayerController())
+        UGameplayStatics::PlaySound2D(GetWorld(), PlayerDeathSound);
 }
 
 void ASTUGameModeBase::LogInfo()
@@ -189,6 +198,8 @@ void ASTUGameModeBase::StartRound()
 
     GetWorldTimerManager().SetTimer(RoundTimerHandle, this, &ASTUGameModeBase::UpdateRound, 1.0f, true);
 
+    UGameplayStatics::PlaySound2D(GetWorld(), PlayerRespawnSound);
+
     UE_LOG(LogGameModeBase, Display, TEXT("--------- Round %i / %i ---------"), CurrentRound, GameData.RoundsNum);
 }
 
@@ -231,10 +242,13 @@ void ASTUGameModeBase::ResetPlayers()
 
 void ASTUGameModeBase::RespawnPlayer(AController* InController)
 {
-    const auto RespawnComponent = InController->FindComponentByClass<USTURespawnComponent>();
+    if (GameData.bAllowRespawn)
+    {
+        const auto RespawnComponent = InController->FindComponentByClass<USTURespawnComponent>();
 
-    if (RespawnComponent && RoundCountDown > GameData.RespawnTime)
-        RespawnComponent->Respawn(GameData.RespawnTime);
+        if (RespawnComponent && RoundCountDown > GameData.RespawnTime)
+            RespawnComponent->Respawn(GameData.RespawnTime);
+    }
 }
 
 void ASTUGameModeBase::GameOver()
@@ -250,6 +264,8 @@ void ASTUGameModeBase::GameOver()
     }
 
     SetMatchState(ESTUMatchState::GameOver);
+
+    UGameplayStatics::PlaySound2D(GetWorld(), PlayerDeathSound);
 }
 
 void ASTUGameModeBase::SetMatchState(ESTUMatchState State)
