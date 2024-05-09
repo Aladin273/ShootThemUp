@@ -46,6 +46,15 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game")
 	TArray<FLevelData> LevelsData;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
+	USoundClass* MusicSoundClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
+	USoundClass* SFXSoundClass;
+
+protected:
+	virtual void OnStart() override;
+
 private:
 	FLevelData StartupLevel;
 };

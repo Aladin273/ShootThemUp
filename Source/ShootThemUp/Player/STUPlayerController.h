@@ -35,4 +35,7 @@ protected:
 private:
 	UFUNCTION()
 	void OnPauseGame();
+
+	UFUNCTION()
+	void OnMute();
 };
