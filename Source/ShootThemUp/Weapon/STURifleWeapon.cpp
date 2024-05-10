@@ -117,5 +117,9 @@ void ASTURifleWeapon::MakeDamage(const FHitResult& HitResult)
 	AActor* DamagedActor = HitResult.GetActor();
 
 	if (DamagedActor)
-		DamagedActor->TakeDamage(DamageAmount, {}, GetController(), this);
+	{
+		FPointDamageEvent PointDamageEvent;
+		PointDamageEvent.HitInfo = HitResult;
+		DamagedActor->TakeDamage(DamageAmount, PointDamageEvent, GetController(), this);
+	}
 }

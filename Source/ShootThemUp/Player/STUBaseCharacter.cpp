@@ -116,7 +116,7 @@ void ASTUBaseCharacter::OnLand(const FHitResult& Hit)
 			}, FallDelay, false);
 
 		float Damage = FMath::GetMappedRangeValueClamped(FallDamageVelocity, FallDamage, FallVelocityZ);
-		TakeDamage(Damage, {}, nullptr, nullptr);
+		TakeDamage(Damage, FPointDamageEvent{}, nullptr, nullptr);
 	}
 
 	UE_LOG(LogBaseCharacter, Display, TEXT("Landed with Velocity: %.f"), FallVelocityZ);

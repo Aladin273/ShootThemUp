@@ -12,6 +12,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeath); // C++ & BP
 //DECLARE_MULTICAST_DELEGATE_OneParam(FOnHealthChanged); // C++
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnHealthChanged, float, Health, float, HealthDelta, float, MaxHealth); // C++ & BP
 
+class UPhysicalMaterial;
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class SHOOTTHEMUP_API USTUHealthComponent : public UActorComponent
 {
@@ -59,6 +61,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = "AutoHeal"))
 	float HealModifier = 1.f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TMap<UPhysicalMaterial*, float> DamageModifiers;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VFX")
 	TSubclassOf<UCameraShakeBase> CameraShake;
 
@@ -69,13 +74,23 @@ protected:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+protected:
 	UFUNCTION(BlueprintCallable)
 	virtual void OnTakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
+
+	UFUNCTION(BlueprintCallable)
+	virtual void OnTakePointDamage(AActor* DamagedActor, float Damage, class AController* InstigatedBy, FVector HitLocation, class UPrimitiveComponent* FHitComponent, FName BoneName, FVector ShotFromDirection, const class UDamageType* DamageType, AActor* DamageCauser );
+
+	UFUNCTION(BlueprintCallable)
+	virtual void OnTakeRadialDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, FVector Origin, const FHitResult& HitInfo, class AController* InstigatedBy, AActor* DamageCauser );
 
 private:
 	void SetHealth(float NewHealth);
 	void HealUpdate();
 	
+	float GetDamageModifier(AActor* DamagedActor, FName BoneName) const;
+	void ApplyDamage(float Damage, AController* InstigatedBy);
+
 	void PlayShake();
 	void Killed(AController* Killer);
 	
