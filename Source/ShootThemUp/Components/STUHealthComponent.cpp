@@ -7,6 +7,7 @@
 #include "GameFramework/Controller.h"
 
 #include "PhysicalMaterials/PhysicalMaterial.h"
+#include "Perception/AISense_Damage.h"
 
 #include "../Dev/STUFireDamageType.h"
 #include "../Dev/STUIceDamageType.h"
@@ -120,6 +121,14 @@ float USTUHealthComponent::GetDamageModifier(AActor* DamagedActor, FName BoneNam
 	return 1.0f;
 }
 
+void USTUHealthComponent::ReportDamageEvent(float Damage, AController* InvistigatedBy)
+{
+	if (GetOwner() && InvistigatedBy && InvistigatedBy->GetPawn())
+	{
+		UAISense_Damage::ReportDamageEvent(GetWorld(), GetOwner(), InvistigatedBy->GetPawn(), Damage, InvistigatedBy->GetPawn()->GetActorLocation(), GetOwner()->GetActorLocation());
+	}
+}
+
 void USTUHealthComponent::ApplyDamage(float Damage, AController* InstigatedBy)
 {
 	if (Damage <= 0.f || IsDead())
@@ -139,6 +148,7 @@ void USTUHealthComponent::ApplyDamage(float Damage, AController* InstigatedBy)
 	}
 
 	PlayShake();
+	ReportDamageEvent(Damage, InstigatedBy);
 }
 
 void USTUHealthComponent::PlayShake()

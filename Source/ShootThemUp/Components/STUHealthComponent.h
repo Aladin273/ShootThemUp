@@ -89,6 +89,8 @@ private:
 	void HealUpdate();
 	
 	float GetDamageModifier(AActor* DamagedActor, FName BoneName) const;
+	
+	void ReportDamageEvent(float Damage, AController* InvistigatedBy);
 	void ApplyDamage(float Damage, AController* InstigatedBy);
 
 	void PlayShake();

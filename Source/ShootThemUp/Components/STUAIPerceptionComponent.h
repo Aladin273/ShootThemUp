@@ -17,4 +17,7 @@ class SHOOTTHEMUP_API USTUAIPerceptionComponent : public UAIPerceptionComponent
 public:
 	UFUNCTION(BlueprintCallable)
 	AActor* GetClosestEnemy() const;
+
+private:
+	bool IsEnemyExist(const TArray<AActor*>& PercieveActors) const;
 };
