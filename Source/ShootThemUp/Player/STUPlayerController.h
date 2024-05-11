@@ -7,6 +7,7 @@
 #include "STUPlayerController.generated.h"
 
 class USTURespawnComponent;
+class USTUStatTableWidget;
 
 /**
  * 
@@ -23,6 +24,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	USTURespawnComponent* RespawnComponent;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<UUserWidget> GameTableWidgetCass;
+
 protected:
 	virtual void BeginPlay() override;
 	
@@ -38,4 +42,10 @@ private:
 
 	UFUNCTION()
 	void OnMute();
+	
+	UFUNCTION()
+	void OnGameTable();
+
+	UPROPERTY()
+	USTUStatTableWidget* GameTableWidget;
 };

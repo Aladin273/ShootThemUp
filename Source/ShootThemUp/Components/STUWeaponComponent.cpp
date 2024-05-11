@@ -33,11 +33,11 @@ bool USTUWeaponComponent::IsFiring() const
 	return CurrentWeapon.Weapon && CurrentWeapon.Weapon->IsFiring();
 }
 
-void USTUWeaponComponent::NextWeapon()
+void USTUWeaponComponent::NextWeapon(int32 WeaponIndex /*= -1*/)
 {
-	if (CanEquip())
+	if (CanEquip() && CurrentWeaponIndex != WeaponIndex)
 	{
-		CurrentWeaponIndex = (CurrentWeaponIndex + 1) % Weapons.Num();
+		CurrentWeaponIndex = (WeaponIndex == -1 ? CurrentWeaponIndex + 1 : WeaponIndex) % Weapons.Num();
 		EquipWeapon(CurrentWeaponIndex);
 	}
 }

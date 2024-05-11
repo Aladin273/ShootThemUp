@@ -38,7 +38,7 @@ float USTUHealthComponent::GetMaxHealth() const
 
 bool USTUHealthComponent::IsDead() const
 {
-	return Health <= 0.f;
+	return Health <= 0.f && bCanBeKilled;
 }
 
 bool USTUHealthComponent::TryToAddHealth(float HealthAmount)

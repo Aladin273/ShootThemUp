@@ -62,6 +62,9 @@ protected:
 	float HealModifier = 1.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bCanBeKilled = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<UPhysicalMaterial*, float> DamageModifiers;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VFX")

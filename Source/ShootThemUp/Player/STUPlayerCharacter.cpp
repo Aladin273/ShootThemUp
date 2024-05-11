@@ -55,10 +55,14 @@ void ASTUPlayerCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ASTUPlayerCharacter::StartFire);
 	PlayerInputComponent->BindAction("Fire", IE_Released, this, &ASTUPlayerCharacter::StopFire);
 
-	PlayerInputComponent->BindAction("NextWeapon", IE_Pressed, WeaponComponent, &USTUWeaponComponent::NextWeapon);
 	PlayerInputComponent->BindAction("Reload", IE_Pressed, WeaponComponent, &USTUWeaponComponent::Reload);
 
 	PlayerInputComponent->BindAction("ToggleView", IE_Pressed, this, &ASTUPlayerCharacter::ToggleView);
+	
+	DECLARE_DELEGATE_OneParam(FNextWeaponInputSignature, int32);
+	PlayerInputComponent->BindAction<FNextWeaponInputSignature>("NextWeapon", IE_Pressed, WeaponComponent, &USTUWeaponComponent::NextWeapon, -1);
+	PlayerInputComponent->BindAction<FNextWeaponInputSignature>("FirstWeapon", IE_Pressed, WeaponComponent, &USTUWeaponComponent::NextWeapon, 0);
+	PlayerInputComponent->BindAction<FNextWeaponInputSignature>("SecondWeapon", IE_Pressed, WeaponComponent, &USTUWeaponComponent::NextWeapon, 1);
 }
 
 void ASTUPlayerCharacter::OnDeath()

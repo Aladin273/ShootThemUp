@@ -38,7 +38,7 @@ public:
 	virtual bool IsFiring() const;
 
 	UFUNCTION(BlueprintCallable)
-	virtual void NextWeapon();
+	virtual void NextWeapon(int32 WeaponIndex = -1);
 
 	UFUNCTION(BlueprintCallable)
 	virtual void Reload();
