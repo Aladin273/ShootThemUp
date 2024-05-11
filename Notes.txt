@@ -1,0 +1,4 @@
+Shoot Them Up
+-------------------------------------------------------------------
+Autofire, ADS, ShootAngle, Crounch, Slide, Shadows
+Sensitivity, Settings, SoundDelay, HitMarker, Legs
