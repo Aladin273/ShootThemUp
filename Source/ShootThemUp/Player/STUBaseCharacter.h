@@ -74,6 +74,10 @@ protected:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	virtual void TurnOff() override;
+	
+	virtual void Reset() override;
+
 protected:
 	UFUNCTION(BlueprintCallable)
 	virtual void OnDeath();

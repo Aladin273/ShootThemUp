@@ -116,6 +116,8 @@ private:
 	void GameOver();
 
 	void SetMatchState(ESTUMatchState State);
+
+	void StopAllFire();
 	
 	ESTUMatchState MatchState = ESTUMatchState::WaitingToStart;
 	

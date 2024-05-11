@@ -74,6 +74,20 @@ void ASTUBaseCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+void ASTUBaseCharacter::TurnOff()
+{
+	WeaponComponent->StopFire();
+
+	Super::TurnOff();
+}
+
+void ASTUBaseCharacter::Reset()
+{
+	WeaponComponent->StopFire();
+
+	Super::Reset();
+}
+
 void ASTUBaseCharacter::OnDeath()
 {
 	PlayAnimMontage(DeathAnimMontage);
